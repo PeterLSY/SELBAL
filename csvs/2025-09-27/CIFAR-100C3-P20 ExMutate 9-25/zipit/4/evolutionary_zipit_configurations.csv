@@ -1,0 +1,171 @@
+Joint,Per Task Avg,Model Name,Per Class,Stop Node,Params A,Params B
+tensor(0.),tensor(0.),8_57_59_83_84_90,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),51_79_94,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),5_14_17_47_51_57_62_77_86_89_91_95,[0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0100),tensor(0.0833),8_18_34_41_57_59_61_70_76_83_84_90,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(1.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),18_34_41_61_70_76,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),0_37_43_51_74_76,[tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),0_2_4_49_73_93,[tensor(0.), 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),5_14_17_47_51_57_62_77_86_89_91_95,[0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),0_2_4_49_73_93,[tensor(0.), 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0100),tensor(0.0833),8_18_34_41_57_59_61_70_76_83_84_90,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, tensor(0.), 0.0, tensor(1.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),12_20_24_35_69_92,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),1_37_42_47_75_80,[0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),5_14_17_62_77_91,[0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),20_23_33,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),0_18_33_43_58_80,[tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0100),tensor(0.1667),0_18_33_43_58_80,[tensor(1.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0100),tensor(0.1667),12_20_24_35_69_92,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(1.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),0_37_43_51_74_76,[tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),1_37_42_47_75_80,[0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.),tensor(0.),47_51_57_86_89_95,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+0.06055555555555556,0.125,[nan nan nan nan nan nan nan nan  0. nan nan nan  0. nan nan nan nan nan
+  0. nan  0. nan nan nan  0. nan nan nan nan nan nan nan nan nan  0.  0.
+ nan nan nan nan nan  0. nan nan nan nan nan nan nan nan nan nan nan nan
+ nan nan nan  0. nan  0. nan  1. nan nan nan nan nan nan nan  0.  0. nan
+ nan nan nan nan  0. nan nan nan nan nan nan  0.  0. nan nan nan nan nan
+  0. nan  1. nan nan nan nan nan nan nan],0.08333333333333333,0.16666666666666666,8_18_34_41_57_59_61_70_76_83_84_90,12_20_24_35_69_92,0.437122106552124,match_tensors_zipit,resnet20x4,21,0.0001,0.075
+0.06,0.125,[nan nan nan nan nan nan nan nan  0. nan nan nan  0. nan nan nan nan nan
+  0. nan  0. nan nan nan  0. nan nan nan nan nan nan nan nan nan  0.  0.
+ nan nan nan nan nan  0. nan nan nan nan nan nan nan nan nan nan nan nan
+ nan nan nan  0. nan  0. nan  1. nan nan nan nan nan nan nan  0.  0. nan
+ nan nan nan nan  0. nan nan nan nan nan nan  0.  0. nan nan nan nan nan
+  0. nan  1. nan nan nan nan nan nan nan],0.08333333333333333,0.16666666666666666,8_18_34_41_57_59_61_70_76_83_84_90,12_20_24_35_69_92,0.4273693561553955,match_tensors_zipit,resnet20x4,21,0.0001,0.075
+0.060588235294117644,0.125,[ 1. nan nan nan nan nan nan nan  0. nan nan nan nan nan nan nan nan nan
+  0. nan nan nan nan nan nan nan nan nan nan nan nan nan nan  0.  0. nan
+ nan nan nan nan nan  0. nan  0. nan nan nan nan nan nan nan nan nan nan
+ nan nan nan  0.  0.  0. nan  0. nan nan nan nan nan nan nan nan  1. nan
+ nan nan nan nan  0. nan nan nan  0. nan nan  0.  0. nan nan nan nan nan
+  0. nan nan nan nan nan nan nan nan nan],0.08333333333333333,0.16666666666666666,8_18_34_41_57_59_61_70_76_83_84_90,0_18_33_43_58_80,0.4083724021911621,match_tensors_zipit,resnet20x4,21,0.0001,0.075
+0.060588235294117644,0.125,[ 1. nan nan nan nan nan nan nan  0. nan nan nan nan nan nan nan nan nan
+  0. nan nan nan nan nan nan nan nan nan nan nan nan nan nan  0.  0. nan
+ nan nan nan nan nan  0. nan  0. nan nan nan nan nan nan nan nan nan nan
+ nan nan nan  0.  0.  0. nan  0. nan nan nan nan nan nan nan nan  1. nan
+ nan nan nan nan  0. nan nan nan  0. nan nan  0.  0. nan nan nan nan nan
+  0. nan nan nan nan nan nan nan nan nan],0.08333333333333333,0.16666666666666666,8_18_34_41_57_59_61_70_76_83_84_90,0_18_33_43_58_80,0.39298081398010254,match_tensors_zipit,resnet20x4,21,0.0001,0.075
+0.07,0.18166666666666667,[ nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan 0.79  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.
+ 0.    nan  nan  nan  nan  nan 0.3   nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.18166666666666667,8_57_59_83_84_90,0.0,None,resnet20x4,21,0.0001,0.075
+0.02666666666666667,0.29333333333333333,[ nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.75  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.13  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan
+  nan  nan],0.29333333333333333,51_79_94,0.0,None,resnet20x4,21,0.0001,0.075
+0.0008333333333333334,0.0825,[ nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan
+ 0.    nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.    nan  nan  nan 0.98  nan  nan  nan  nan
+  nan 0.    nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan
+  nan  nan 0.    nan  nan 0.01  nan 0.    nan  nan  nan 0.    nan  nan
+  nan  nan],0.0825,5_14_17_47_51_57_62_77_86_89_91_95,0.0,None,resnet20x4,21,0.0001,0.075
+0.058333333333333334,0.17,[ nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan 0.
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.96  nan  nan  nan  nan  nan  nan  nan  nan
+ 0.    nan  nan  nan  nan  nan 0.06  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.17,18_34_41_61_70_76,0.0,None,resnet20x4,21,0.0001,0.075
+0.1,0.165,[0.    nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.29  nan  nan  nan  nan
+  nan 0.    nan  nan  nan  nan  nan  nan  nan 0.7   nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.    nan 0.    nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.165,0_37_43_51_74_76,0.0,None,resnet20x4,21,0.0001,0.075
+0.0033333333333333335,0.16166666666666665,[0.    nan 0.72  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan 0.03  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.22  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan
+  nan  nan],0.16166666666666665,0_2_4_49_73_93,0.0,None,resnet20x4,21,0.0001,0.075
+0.0,0.08333333333333333,[nan nan nan nan nan  0. nan nan nan nan nan nan nan nan  0. nan nan  0.
+ nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan
+ nan nan nan nan nan nan nan nan nan nan nan  0. nan nan nan  1. nan nan
+ nan nan nan  0. nan nan nan nan  0. nan nan nan nan nan nan nan nan nan
+ nan nan nan nan nan  0. nan nan nan nan nan nan nan nan  0. nan nan  0.
+ nan  0. nan nan nan  0. nan nan nan nan],0.08333333333333333,5_14_17_47_51_57_62_77_86_89_91_95,0.0,None,resnet20x4,21,0.0001,0.075
+0.07,0.15333333333333332,[0.    nan 0.25  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan 0.67  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan
+  nan  nan],0.15333333333333332,0_2_4_49_73_93,0.0,None,resnet20x4,21,0.0001,0.075
+0.016666666666666666,0.16,[ nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan
+  nan  nan  nan  nan  nan  nan 0.02  nan  nan  nan 0.    nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.94
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan
+  nan  nan],0.16,12_20_24_35_69_92,0.0,None,resnet20x4,21,0.0001,0.075
+0.006666666666666667,0.16833333333333333,[ nan 0.01  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan
+ 1.    nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan 0.    nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.16833333333333333,1_37_42_47_75_80,0.0,None,resnet20x4,21,0.0001,0.075
+0.015,0.17666666666666667,[ nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan
+ 0.81  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan 0.25  nan  nan  nan  nan  nan  nan
+  nan  nan],0.17666666666666667,5_14_17_62_77_91,0.0,None,resnet20x4,21,0.0001,0.075
+0.10333333333333333,0.37333333333333335,[ nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.34  nan  nan 0.74  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.04  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.37333333333333335,20_23_33,0.0,None,resnet20x4,21,0.0001,0.075
+0.07,0.16666666666666666,[0.    nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan
+  nan 0.95  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan 0.05  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.16666666666666666,0_18_33_43_58_80,0.0,None,resnet20x4,21,0.0001,0.075
+0.12333333333333334,0.19,[0.46  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.01  nan  nan  nan  nan
+  nan 0.    nan  nan  nan  nan  nan  nan  nan 0.67  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.    nan 0.    nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.19,0_37_43_51_74_76,0.0,None,resnet20x4,21,0.0001,0.075
+0.058333333333333334,0.15833333333333333,[ nan 0.48  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan
+ 0.34  nan  nan  nan  nan 0.13  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.    nan  nan  nan  nan 0.    nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.15833333333333333,1_37_42_47_75_80,0.0,None,resnet20x4,21,0.0001,0.075
+0.011666666666666667,0.09666666666666666,[ nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.    nan  nan  nan 0.06  nan  nan  nan  nan
+  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan 0.37  nan  nan 0.    nan  nan  nan  nan  nan 0.15  nan  nan
+  nan  nan],0.09666666666666666,47_51_57_86_89_95,0.0,None,resnet20x4,21,0.0001,0.075

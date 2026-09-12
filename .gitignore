@@ -1,0 +1,21 @@
+# data and model artefacts (GBs) -- never committed
+/data/
+/checkpoints/
+/runs*/
+*.pth.tar
+*.pth
+
+# scratch
+__pycache__/
+*.pyc
+.roundtrip_tmp/
+.init_backbone_tmp/
+.ipynb_checkpoints/
+
+# editor / tool settings (any dot-directory)
+.*/
+
+# internal meeting material (kept locally, not published)
+/REPORT_TALK.md
+/RESUME.md
+/figures/weekly_cheatsheet.md

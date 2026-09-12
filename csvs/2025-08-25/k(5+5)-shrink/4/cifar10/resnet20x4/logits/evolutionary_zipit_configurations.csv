@@ -1,0 +1,2 @@
+Joint,Per Task Avg,Model Name,Per Class,Stop Node,Params A,Params B
+tensor(0.7777),tensor(0.7777),0_1_2_3_4_5_6_7_8_9,[tensor(0.8570), tensor(0.9140), tensor(0.7720), tensor(0.6490), tensor(0.6310), tensor(0.6460), tensor(0.7200), tensor(0.7540), tensor(0.9230), tensor(0.9110)],21,0.0001,0.075

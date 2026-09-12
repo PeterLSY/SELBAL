@@ -1,0 +1,9 @@
+[multiseed 2026-07-26 22:10:59] starting exp2d (E=9 backbone, S=0.1 finetune, 25 gens)
+[multiseed 2026-07-27 10:42:52] exp2d exited rc=0
+[multiseed 2026-07-27 10:42:53] starting exp2b seed1 (40 generations)
+[multiseed 2026-07-27 22:56:59] exp2d already Done, skip
+[multiseed 2026-07-27 22:56:59] run_sesil.py active; waiting
+[multiseed 2026-07-28 06:42:48] starting exp2b seed1 (40 generations)
+[multiseed 2026-07-28 16:52:38] exp2d already complete, skip
+[multiseed 2026-07-28 16:52:38] exp2b seed1 already complete, skip
+[multiseed 2026-07-28 16:52:39] starting exp2b seed2 (40 generations)

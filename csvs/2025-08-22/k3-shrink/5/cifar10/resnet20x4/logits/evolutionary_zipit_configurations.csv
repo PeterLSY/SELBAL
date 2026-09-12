@@ -1,0 +1,4 @@
+Joint,Per Task Avg,Model Name,Per Class,Stop Node,Params A,Params B
+tensor(0.6652),tensor(0.6652),0_1_2_3_4_5_6_7_8,[tensor(0.7300), tensor(0.7910), tensor(0.5420), tensor(0.4280), tensor(0.6880), tensor(0.5640), tensor(0.8350), tensor(0.7540), tensor(0.6550), 0.0],21,0.0001,0.075
+tensor(0.6379),tensor(0.6379),0_1_2_3_4_5_6_7_8_9,[tensor(0.7300), tensor(0.7320), tensor(0.4750), tensor(0.4120), tensor(0.7000), tensor(0.5580), tensor(0.7820), tensor(0.7770), tensor(0.5900), tensor(0.6230)],21,0.0001,0.075
+0.6545,0.6299777777777777,0.6315555555555555,0.6284,0_1_2_3_4_5_6_7_8,0_1_2_3_4_5_6_7_8_9,0.43673086166381836,match_tensors_zipit,resnet20x4,21,0.0001,0.075

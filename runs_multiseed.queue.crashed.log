@@ -1,0 +1,14 @@
+[multiseed 2026-07-25 03:17:11] run_sesil.py active; waiting
+[multiseed 2026-07-25 03:23:48] run_sesil.py active; waiting
+[multiseed 2026-07-26 04:00:07] run_sesil.py active; waiting
+[multiseed 2026-07-26 16:58:28] starting exp2d (E=9 backbone, S=0.1 finetune, 25 gens)
+[multiseed 2026-07-26 16:58:28] exp2d exited rc=1
+[multiseed 2026-07-26 16:58:28] starting exp2b seed1 (40 generations)
+[multiseed 2026-07-26 16:58:28] exp2b seed1 exited rc=1
+[multiseed 2026-07-26 16:58:29] starting exp2b seed2 (40 generations)
+[multiseed 2026-07-26 16:58:29] exp2b seed2 exited rc=1
+[multiseed 2026-07-26 16:58:29] starting exp1 seed1
+[multiseed 2026-07-26 16:58:29] exp1 seed1 exited rc=1
+[multiseed 2026-07-26 16:58:29] starting exp1 seed2
+[multiseed 2026-07-26 16:58:29] exp1 seed2 exited rc=1
+[multiseed 2026-07-26 16:58:30] all multi-seed runs finished

@@ -1,0 +1,181 @@
+Joint,Per Task Avg,Model Name,Per Class,Stop Node,Params A,Params B
+tensor(0.0127),tensor(0.1155),12_24_37_43_51_58_75_80_86_92_95,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1700), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1700), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, tensor(0.1500), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0900), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, tensor(0.2100), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0170),tensor(0.1417),1_12_24_34_37_42_47_61_75_76_80_92,[0.0, tensor(0.1300), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, tensor(0.0800), 0.0, 0.0, 0.0, 0.0, tensor(0.2200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.3000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2000), tensor(0.2400), 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0154),tensor(0.1283),0_2_8_37_43_49_51_73_74_76_83_84,[tensor(0.1900), 0.0, tensor(0.0900), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2800), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1100), 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.5200), tensor(0.0900), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0056),tensor(0.0509),0_2_8_37_49_51_73_75_80_83_84,[tensor(0.2400), 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0300), 0.0, tensor(0.0300), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1100), 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.0100), tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0130),tensor(0.1083),8_14_17_43_51_74_76_83_84_86_91_95,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0800), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1400), 0.0, 0.0, tensor(0.4000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, tensor(0.0600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), tensor(0.0100), 0.0, tensor(0.1500), 0.0, 0.0, 0.0, 0.0, tensor(0.1200), 0.0, 0.0, 0.0, tensor(0.1100), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0109),tensor(0.0991),0_20_23_33_37_51_57_59_75_80_90,[tensor(0.2400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), 0.0, 0.0, tensor(0.0800), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.4600), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0123),tensor(0.1025),14_17_20_23_33_43_57_58_59_80_90_91,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, tensor(0.5200), 0.0, 0.0, tensor(0.1300), 0.0, 0.0, tensor(0.1200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1200), tensor(0.0300), tensor(0.0700), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0600), tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0138),tensor(0.1150),2_8_37_49_57_59_73_75_80_83_84_90,[0.0, 0.0, tensor(0.0600), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1700), 0.0, tensor(0.2000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), 0.0, tensor(0.1100), 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, tensor(0.2400), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0125),tensor(0.1042),0_8_14_17_37_43_51_74_76_83_84_91,[tensor(0.1600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1500), 0.0, 0.0, tensor(0.3800), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0700), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0800), 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0700), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0148),tensor(0.1233),0_4_20_23_33_51_57_59_86_90_93_95,[tensor(0.0900), 0.0, 0.0, 0.0, tensor(0.2100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, tensor(0.2600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0800), 0.0, tensor(0.0800), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0700), 0.0, 0.0, 0.0, tensor(0.0300), 0.0, 0.0, tensor(0.0100), 0.0, tensor(0.3200), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0160),tensor(0.1333),0_2_8_18_33_43_49_58_73_80_83_84,[tensor(0.1800), 0.0, tensor(0.0600), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0700), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.3000), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.3900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, tensor(0.2500), tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0126),tensor(0.1145),0_1_4_14_17_37_42_47_51_91_93,[tensor(0.1500), tensor(0.1100), 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, tensor(0.3900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1500), 0.0, 0.0, 0.0, 0.0, tensor(0.0700), 0.0, 0.0, 0.0, 0.0, tensor(0.1800), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1400), 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0092),tensor(0.0767),20_23_33_43_51_57_58_59_79_80_90_94,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0800), 0.0, 0.0, tensor(0.1800), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2000), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2400), tensor(0.0500), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0700), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0112),tensor(0.0933),2_8_37_49_57_59_73_75_80_83_84_90,[0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1300), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2000), 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1700), 0.0, tensor(0.0800), 0.0, 0.0, 0.0, 0.0, tensor(0.1500), 0.0, 0.0, tensor(0.0700), tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0126),tensor(0.1400),0_14_17_37_43_51_74_76_91,[tensor(0.0700), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2600), 0.0, 0.0, tensor(0.5200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1300), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1000), 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0113),tensor(0.1027),0_14_17_37_43_51_58_74_76_80_91,[tensor(0.1300), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1700), 0.0, 0.0, tensor(0.1200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0900), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.4200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0200), 0.0, tensor(0.0700), 0.0, 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0231),tensor(0.1925),12_14_17_24_37_51_75_80_86_91_92_95,[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0800), 0.0, tensor(0.0900), 0.0, 0.0, tensor(0.2500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.5700), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1500), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1600), 0.0, 0.0, 0.0, 0.0, tensor(0.0300), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1600), 0.0, 0.0, 0.0, 0.0, tensor(0.2700), tensor(0.1400), 0.0, 0.0, tensor(0.3200), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0122),tensor(0.1017),0_1_4_42_43_47_51_58_80_86_93_95,[tensor(0.3300), tensor(0.1000), 0.0, 0.0, tensor(0.), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1100), tensor(0.1700), 0.0, 0.0, 0.0, tensor(0.2100), 0.0, 0.0, 0.0, tensor(0.0600), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0800), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0300), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.), 0.0, tensor(0.1200), 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0151),tensor(0.1678),2_14_17_43_49_58_73_80_91,[0.0, 0.0, tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0900), 0.0, 0.0, tensor(0.5200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1900), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2200), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1300), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+tensor(0.0176),tensor(0.1600),0_20_23_33_37_51_57_59_75_80_90,[tensor(0.1800), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2100), 0.0, 0.0, tensor(0.1900), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2500), 0.0, 0.0, 0.0, tensor(0.2100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0400), 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.2100), 0.0, tensor(0.2700), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.1200), 0.0, 0.0, 0.0, 0.0, tensor(0.0700), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, tensor(0.0100), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],21,0.0001,0.075
+0.2326086956521739,0.37083333333333335,[ nan 0.38  nan  nan  nan  nan  nan  nan 0.14  nan  nan  nan 0.25  nan
+ 0.25  nan  nan 0.81  nan  nan  nan  nan  nan  nan 0.42  nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.17  nan  nan 0.37  nan  nan  nan  nan
+ 0.44 0.6   nan  nan  nan 0.33  nan  nan  nan 0.27  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.56  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.16 0.39 0.67  nan  nan  nan 0.19  nan  nan 0.27
+ 0.17  nan 0.54  nan  nan  nan  nan 0.29 0.28  nan  nan 0.28  nan  nan
+  nan  nan],0.37083333333333335,0.37083333333333335,8_14_17_43_51_74_76_83_84_86_91_95,1_12_24_34_37_42_47_61_75_76_80_92,0.0032558441162109375,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.278,0.35,[ nan  nan 0.11  nan  nan  nan  nan  nan 0.39  nan  nan  nan  nan  nan
+ 0.1   nan  nan 0.61  nan  nan 0.68  nan  nan 0.48  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.66  nan  nan  nan 0.26  nan  nan  nan  nan
+  nan 0.27  nan  nan  nan  nan  nan 0.12  nan  nan  nan  nan  nan  nan
+  nan 0.45 0.28 0.29  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.61  nan 0.25  nan  nan  nan  nan 0.38  nan  nan 0.57
+ 0.27  nan  nan  nan  nan  nan 0.18 0.14  nan  nan  nan  nan  nan  nan
+  nan  nan],0.3233333333333333,0.37666666666666665,2_8_37_49_57_59_73_75_80_83_84_90,14_17_20_23_33_43_57_58_59_80_90_91,0.0031735897064208984,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.2795,0.3675,[ nan  nan 0.22  nan  nan  nan  nan  nan 0.33  nan  nan  nan  nan  nan
+ 0.13  nan  nan 0.65  nan  nan 0.68  nan  nan 0.46  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.61  nan  nan  nan 0.3   nan  nan  nan  nan
+  nan 0.37  nan  nan  nan  nan  nan 0.21  nan  nan  nan  nan  nan  nan
+  nan 0.42 0.32 0.37  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.46  nan 0.33  nan  nan  nan  nan 0.35  nan  nan 0.48
+ 0.19  nan  nan  nan  nan  nan 0.31 0.18  nan  nan  nan  nan  nan  nan
+  nan  nan],0.4041666666666667,0.3308333333333333,14_17_20_23_33_43_57_58_59_80_90_91,2_8_37_49_57_59_73_75_80_83_84_90,0.0032150745391845703,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.22842105263157894,0.3273611111111111,[0.66  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+ 0.35  nan  nan 0.63  nan  nan 0.23  nan  nan 0.35  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.7   nan  nan  nan 0.36  nan  nan  nan  nan
+  nan 0.13  nan  nan  nan  nan  nan  nan  nan 0.29  nan  nan  nan  nan
+  nan 0.33 0.39 0.09  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.48  nan 0.26  nan  nan 0.26 0.26  nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.44 0.13  nan  nan 0.    nan  nan  nan
+  nan  nan],0.3655555555555556,0.2891666666666667,0_14_17_37_43_51_74_76_91,20_23_33_43_51_57_58_59_79_80_90_94,0.006056785583496094,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.259047619047619,0.3466666666666667,[0.84 0.12  nan  nan 0.1   nan  nan  nan  nan  nan  nan  nan  nan  nan
+ 0.07  nan  nan 0.67  nan  nan 0.66  nan  nan 0.17  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.47  nan  nan  nan  nan  nan  nan  nan  nan
+ 0.31 0.21  nan  nan  nan 0.54  nan  nan  nan 0.28  nan  nan  nan  nan
+  nan 0.21 0.27 0.12  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.58  nan  nan  nan
+  nan  nan 0.45  nan  nan  nan 0.2  0.19  nan 0.05  nan 0.75  nan  nan
+  nan  nan],0.375,0.31833333333333336,0_1_4_42_43_47_51_58_80_86_93_95,14_17_20_23_33_43_57_58_59_80_90_91,0.0030183792114257812,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.35736842105263156,0.4280681818181818,[0.18  nan 0.22  nan  nan  nan  nan  nan 0.06  nan  nan  nan 0.49  nan
+ 0.29  nan  nan 0.58  nan  nan  nan  nan  nan  nan 0.71  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.43  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan 0.37  nan 0.44  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.59  nan 0.53  nan  nan  nan  nan 0.6   nan  nan 0.05
+ 0.09  nan 0.37  nan  nan  nan  nan 0.51 0.72  nan  nan 0.72  nan  nan
+  nan  nan],0.3236363636363636,0.5325,0_2_8_37_49_51_73_75_80_83_84,12_14_17_24_37_51_75_80_86_91_92_95,0.004496335983276367,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.312,0.38902777777777775,[0.54  nan 0.21  nan  nan  nan  nan  nan 0.28  nan  nan  nan  nan  nan
+ 0.46  nan  nan 0.69  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.36  nan  nan  nan  nan
+  nan 0.57  nan  nan  nan  nan  nan 0.6   nan 0.28  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.61 0.34  nan 0.19  nan  nan  nan  nan  nan  nan 0.42
+ 0.19  nan  nan  nan  nan  nan  nan 0.13  nan  nan  nan  nan  nan  nan
+  nan  nan],0.39555555555555555,0.3825,0_14_17_37_43_51_74_76_91,0_2_8_37_43_49_51_73_74_76_83_84,0.002952098846435547,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.31588235294117645,0.4373611111111111,[0.52  nan 0.19  nan  nan  nan  nan  nan 0.36  nan  nan  nan  nan  nan
+ 0.36  nan  nan 0.71  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.36  nan  nan  nan  nan
+  nan 0.58  nan  nan  nan  nan  nan 0.52  nan 0.19  nan  nan  nan  nan
+  nan  nan 0.36  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.75 0.39  nan 0.18  nan  nan  nan 0.58  nan  nan 0.46
+ 0.09  nan  nan  nan  nan  nan  nan 0.38  nan  nan  nan  nan  nan  nan
+  nan  nan],0.4922222222222222,0.3825,2_14_17_43_49_58_73_80_91,0_2_8_37_43_49_51_73_74_76_83_84,0.0029451847076416016,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.26210526315789473,0.36113636363636364,[ nan  nan  nan  nan  nan  nan  nan  nan 0.1   nan  nan  nan 0.34  nan
+ 0.38  nan  nan 0.86  nan  nan  nan  nan  nan  nan 0.67  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.38  nan  nan  nan  nan
+  nan 0.36  nan  nan  nan  nan  nan  nan  nan 0.17  nan  nan  nan  nan
+  nan  nan 0.33  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.23 0.11 0.34  nan  nan  nan 0.54  nan  nan 0.12
+ 0.2   nan 0.28  nan  nan  nan  nan 0.36 0.46  nan  nan 0.62  nan  nan
+  nan  nan],0.335,0.38727272727272727,8_14_17_43_51_74_76_83_84_86_91_95,12_24_37_43_51_58_75_80_86_92_95,0.003080129623413086,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.2725,0.3723484848484848,[0.75 0.32 0.14  nan 0.16  nan  nan  nan 0.43  nan  nan  nan  nan  nan
+ 0.26  nan  nan 0.55  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.31  nan  nan  nan  nan
+ 0.31 0.57  nan  nan  nan 0.56  nan 0.56  nan 0.07  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.62 0.3   nan 0.28  nan  nan  nan  nan  nan  nan 0.52
+ 0.11  nan  nan  nan  nan  nan  nan 0.4   nan 0.23  nan  nan  nan  nan
+  nan  nan],0.3883333333333333,0.3563636363636364,0_2_8_37_43_49_51_73_74_76_83_84,0_1_4_14_17_37_42_47_51_91_93,0.0030553340911865234,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.32857142857142857,0.34875,[0.59  nan  nan  nan  nan  nan  nan  nan 0.19  nan  nan  nan  nan  nan
+ 0.43  nan  nan 0.87  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.34  nan  nan  nan  nan
+  nan 0.64  nan  nan  nan  nan  nan  nan  nan 0.1   nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.05  nan 0.21  nan  nan  nan  nan  nan  nan 0.13
+ 0.19  nan 0.53  nan  nan  nan  nan 0.41  nan  nan  nan 0.47  nan  nan
+  nan  nan],0.3458333333333333,0.3516666666666667,0_8_14_17_37_43_51_74_76_83_84_91,8_14_17_43_51_74_76_83_84_86_91_95,0.003186941146850586,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.3227777777777778,0.4091666666666667,[ nan  nan  nan  nan  nan  nan  nan  nan 0.28  nan  nan  nan 0.3   nan
+ 0.36  nan  nan 0.84  nan  nan  nan  nan  nan  nan 0.66  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.18  nan  nan  nan  nan
+  nan 0.56  nan  nan  nan  nan  nan  nan  nan 0.16  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.46 0.38 0.5   nan  nan  nan 0.29  nan  nan 0.43
+ 0.16  nan 0.47  nan  nan  nan  nan 0.29 0.46  nan  nan 0.46  nan  nan
+  nan  nan],0.4041666666666667,0.4141666666666667,12_14_17_24_37_51_75_80_86_91_92_95,8_14_17_43_51_74_76_83_84_86_91_95,0.0031080245971679688,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.2381818181818182,0.35318181818181815,[0.76 0.31 0.26  nan 0.14  nan  nan  nan 0.18  nan  nan  nan  nan  nan
+ 0.25  nan  nan 0.56 0.16  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.21  nan  nan  nan 0.29  nan  nan  nan  nan
+ 0.27 0.62  nan  nan  nan 0.6   nan 0.68  nan 0.08  nan  nan  nan  nan
+  nan  nan 0.29  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.42  nan  nan  nan  nan  nan  nan 0.3   nan  nan 0.23
+ 0.09  nan  nan  nan  nan  nan  nan 0.38  nan 0.28  nan  nan  nan  nan
+  nan  nan],0.3563636363636364,0.35,0_1_4_14_17_37_42_47_51_91_93,0_2_8_18_33_43_49_58_73_80_83_84,0.0030341148376464844,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.31588235294117645,0.3779166666666667,[0.76  nan 0.14  nan  nan  nan  nan  nan 0.33  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.39  nan  nan  nan  nan
+  nan 0.35  nan  nan  nan  nan  nan 0.64  nan 0.18  nan  nan  nan  nan
+  nan 0.5   nan 0.34  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.61 0.42 0.34 0.38  nan  nan  nan 0.51  nan  nan 0.27
+ 0.11  nan  nan  nan  nan  nan 0.31  nan  nan  nan  nan  nan  nan  nan
+  nan  nan],0.37416666666666665,0.38166666666666665,2_8_37_49_57_59_73_75_80_83_84_90,0_2_8_37_43_49_51_73_74_76_83_84,0.003108978271484375,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.24181818181818182,0.35333333333333333,[0.19  nan  nan  nan  nan  nan  nan  nan 0.11  nan  nan  nan  nan  nan
+ 0.31  nan  nan 0.86  nan  nan 0.44  nan  nan 0.75  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.42  nan  nan  nan 0.25  nan  nan  nan  nan
+  nan 0.57  nan  nan  nan  nan  nan  nan  nan 0.04  nan  nan  nan  nan
+  nan 0.49  nan 0.44  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.29 0.35 0.3   nan  nan  nan 0.25  nan  nan 0.57
+ 0.15  nan 0.24  nan  nan  nan 0.23 0.42  nan  nan  nan 0.42  nan  nan
+  nan  nan],0.35,0.3566666666666667,0_20_23_33_37_51_57_59_75_80_90,8_14_17_43_51_74_76_83_84_86_91_95,0.003077268600463867,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.236,0.33958333333333335,[0.63 0.32  nan  nan 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.62  nan  nan 0.58  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.65  nan  nan  nan 0.27  nan  nan  nan  nan
+ 0.52 0.27  nan  nan  nan 0.51  nan  nan  nan 0.18  nan  nan  nan  nan
+  nan 0.09 0.26 0.27  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.38  nan  nan  nan  nan 0.33  nan  nan  nan
+  nan  nan 0.09  nan  nan  nan 0.18  nan  nan 0.18  nan 0.3   nan  nan
+  nan  nan],0.38,0.2991666666666667,0_20_23_33_37_51_57_59_75_80_90,0_1_4_42_43_47_51_58_80_86_93_95,0.003068208694458008,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.20789473684210527,0.3129166666666667,[0.43  nan 0.1   nan  nan  nan  nan  nan 0.12  nan  nan  nan  nan  nan
+ 0.38  nan  nan 0.59 0.    nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.24  nan  nan  nan 0.23  nan  nan  nan  nan
+  nan 0.56  nan  nan  nan  nan  nan 0.55  nan 0.15  nan  nan  nan  nan
+  nan  nan 0.26  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.51 0.09  nan 0.64  nan  nan  nan 0.26  nan  nan 0.35
+ 0.05  nan  nan  nan  nan  nan  nan 0.15  nan  nan  nan  nan  nan  nan
+  nan  nan],0.34,0.28583333333333333,0_14_17_37_43_51_58_74_76_80_91,0_2_8_18_33_43_49_58_73_80_83_84,0.0030884742736816406,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.386,0.49236111111111114,[ nan  nan 0.52  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+ 0.37  nan  nan 0.76  nan  nan 0.58  nan  nan 0.31  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.35  nan  nan  nan  nan  nan  nan  nan  nan
+  nan 0.72  nan  nan  nan  nan  nan 0.43  nan  nan  nan  nan  nan  nan
+  nan 0.28 0.53 0.21  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan 0.57  nan  nan  nan  nan  nan  nan 0.6   nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.22 0.38  nan  nan  nan  nan  nan  nan
+  nan  nan],0.4425,0.5422222222222223,14_17_20_23_33_43_57_58_59_80_90_91,2_14_17_43_49_58_73_80_91,0.0025560855865478516,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.274,0.38208333333333333,[0.79 0.13  nan  nan 0.1   nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.65  nan  nan 0.26  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.7   nan  nan  nan  nan  nan  nan  nan  nan
+ 0.31 0.41  nan  nan  nan 0.55  nan  nan  nan 0.29  nan  nan  nan  nan
+  nan 0.33 0.28 0.24  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan  nan  nan  nan  nan  nan 0.14 0.55  nan  nan  nan
+  nan  nan 0.5   nan  nan  nan 0.34  nan  nan 0.08 0.25 0.74  nan  nan
+  nan  nan],0.37,0.39416666666666667,20_23_33_43_51_57_58_59_79_80_90_94,0_1_4_42_43_47_51_58_80_86_93_95,0.0029752254486083984,match_tensors_permute,resnet20x4,21,0.0001,0.075
+0.26705882352941174,0.3621212121212121,[0.32  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+ 0.44  nan  nan 0.69  nan  nan 0.18  nan  nan 0.73  nan  nan  nan  nan
+  nan  nan  nan  nan  nan 0.42  nan  nan  nan 0.3   nan  nan  nan  nan
+  nan 0.19  nan  nan  nan  nan  nan  nan  nan 0.22  nan  nan  nan  nan
+  nan 0.38  nan 0.58  nan  nan  nan  nan  nan  nan  nan  nan  nan  nan
+  nan  nan  nan  nan 0.57 0.44 0.21  nan  nan  nan 0.4   nan  nan  nan
+  nan  nan  nan  nan  nan  nan 0.33 0.06  nan  nan  nan  nan  nan  nan
+  nan  nan],0.3333333333333333,0.39090909090909093,0_14_17_37_43_51_74_76_91,0_20_23_33_37_51_57_59_75_80_90,0.00333404541015625,match_tensors_permute,resnet20x4,21,0.0001,0.075

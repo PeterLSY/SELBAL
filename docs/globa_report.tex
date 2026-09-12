@@ -1,0 +1,700 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  framerule=0.3pt,
+  rulecolor=\color{black!30},
+  xleftmargin=0.6em,
+  xrightmargin=0.6em
+}
+
+\newcommand{\tauv}{\boldsymbol{\tau}}
+\newcommand{\thetav}{\boldsymbol{\theta}}
+\newcommand{\Ug}{U_g}
+\newcommand{\Vg}{V_g}
+\newcommand{\Ct}{\tilde{C}}
+\newcommand{\Dp}{D^{+}}
+\newcommand{\Dm}{D^{-}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{GLOBA as the Crossover Operator of SESiL\\[0.4em]
+\large Signal decomposition, operator design, implementation inventory and results}
+\author{Suyang Liu\\ \small Supervisor: Prof.\ Zinovi Rabinovich \quad COMP 4906}
+\date{September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report documents the integration of GLOBA (Liu, Li \& Zhou, AAAI-26) into the SESiL evolutionary learning framework (Zhao \& Rabinovich, AAMAS 2026). It covers (i) how a pair of parent networks is decomposed into task vectors, a shared low-dimensional basis and six conflict types; (ii) the merge operator built on that decomposition, including the two adaptations needed for SESiL's regime (a lossless \emph{hybrid} basis and a label-aware classifier head); (iii) every new file, function, variable and command-line flag added to the repository, none of which modifies the original \code{sesil/} package; and (iv) the experimental results from the sandbox (Stage~$-1$), the offline screening-validity study (Stage~0) and the closed-loop evolution runs (Phase~4). The main empirical findings are: the six-type diagnostics carry no information about merge outcomes in this regime at any level of analysis; GLOBA's type-selective weighting adds nothing measurable once SESiL's mutation step is applied; whole-network merging nevertheless improves the 25-generation population accuracy on CIFAR-10 10C3 from 0.872 to 0.895, an effect traced to a structural defect in how SESiL saves its offspring rather than to merge quality.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{Setting and notation}
+%=====================================================================
+
+\paragraph{SESiL.} A population of $N=10$ agents, each a ResNet20$\times$4 classifier, is initialised from one shared self-supervised core (SimSiam, 9 epochs, \code{runs\_ssl/simsiam\_e50\_seed0/backbone\_e9.pth.tar}) and specialised on $k=3$ of the 10 CIFAR-10 classes. Each generation: evaluate the population, select mates by phenotypic complementarity, produce offspring by a crossover operator, mutate (fine-tune 2 epochs on all 10 classes, Adam, $10^{-3}$), save. The reference run is \code{exp2d} (permutation merger, 25 generations, seed 0, final population accuracy 0.872). Its budget is written ``SSL 9\,ep + 0.3\,ep'' in the figures: 9 epochs of SimSiam on the full 50k training set, then each agent fine-tuned for 0.1 of an epoch over its own 15k-image class subset (\code{finetune\_sub\_epochs=0.1}, i.e.\ 3 batches of 500), which over 10 agents is 15k images $=0.3$ full-set epochs. Budgets in the figures are always full-set-epoch equivalents summed over the population; per-agent settings in the code are per-subset.
+
+\paragraph{Task vectors.} For a parent $P\in\{A,B\}$ and a layer $\ell$ with weight $\thetav_P^{(\ell)}$, the task vector is
+\begin{equation}
+\tauv_P^{(\ell)} \;=\; \thetav_P^{(\ell)} - \thetav_{\mathrm{core}}^{(\ell)} .
+\label{eq:tau}
+\end{equation}
+A convolution weight of shape $[\mathrm{out},\mathrm{in},k,k]$ is reshaped to a matrix $\tauv\in\mathbb{R}^{m\times n}$ with $m=\mathrm{out}$, $n=\mathrm{in}\cdot k\cdot k$ (proposal \S5.2). Linear weights are used as-is. BatchNorm parameters and running statistics are not decomposed (SESiL recomputes them after every merge). The core is a backbone only: it has no classifier, so $\tauv$ is undefined for the head (\S\ref{sec:head}).
+
+\paragraph{Symmetry convention.} The operator never designates a ``base'' parent. The subscripts $p,q$ below denote the two parents in a canonical order fixed by a content hash of their state dicts (\S\ref{sec:determinism}); $A,B$ denote the parents as given by the caller.
+
+%=====================================================================
+\section{Signal decomposition}
+%=====================================================================
+\label{sec:decomp}
+
+\subsection{Principle}
+GLOBA's starting point is a statement about task arithmetic. If two task vectors $\tauv_A,\tauv_B\in\mathbb{R}^{m\times n}$ have mutually orthogonal row spaces and mutually orthogonal column spaces, then $\tauv_A+\tauv_B$ preserves each one's action exactly: for any input $x$ in $\tauv_A$'s row space, $(\tauv_A+\tauv_B)x=\tauv_A x$, and symmetrically. Interference therefore arises \emph{only} from the non-orthogonal components. GLOBA makes this operational by expressing both task vectors in one shared orthonormal basis, so that each becomes a coefficient matrix $\Ct_i$ whose non-zero cells mark the directions the parent actually uses. Two cells then interact only if they share a row (the same output direction), a column (the same input direction), or both. The six types of \S\ref{sec:types} are exactly the possible occupancy relations between one parent's cell and the other parent's rows and columns: fully free (A), row- or column-coupled (B, C), structurally coupled without collision (E), and direct collision with agreeing ($\Dp$) or opposing ($\Dm$) sign. Merging then becomes the choice of a coefficient per type (Eq.~\ref{eq:merge}).
+
+This paragraph paraphrases the paper's Theorem in \S4.1 (its proof is Eq.~8--9 of the paper); it is not an equation of ours.
+
+\subsection{Provenance of the equations}
+\label{sec:provenance}
+Not every equation below is taken from the paper. Table~\ref{tab:prov} states, for each one, whether it is the paper's (with its equation number), the reference code's rule written as a formula, or a construction of this thesis. Equations of the last two kinds are explained where they appear.
+
+\begin{table}[h]
+\centering\small
+\caption{Where each equation of this report comes from. [P] = paper main text, [App] = appendix, [Code] = the authors' \code{svd\_merging}, [Ours] = this thesis.}
+\label{tab:prov}
+\begin{tabular}{llp{8.6cm}}
+\toprule
+Equation & Source & Relation to the source \\
+\midrule
+\ref{eq:tau} & [P] Eq.~1 & verbatim; the paper's ``base model'' is our shared core \\
+per-parent SVD & [P] Eq.~10 & verbatim \\
+\ref{eq:trunc} & [Code] & the code's \code{svd\_energy\_threshold} rule written as a formula; not in the paper. Symmetric threshold is ours \\
+$U_{\mathrm{cat}},V_{\mathrm{cat}}$ & [P] Eq.~11--12 & verbatim for $T=2$, applied to the \emph{truncated} vectors as in [Code] \\
+\ref{eq:basis} & [P] Eq.~13--14 + [Code] & the SVD of the concatenation is the paper's; keeping only the vectors that hold \code{basis\_energy} of the energy is the code's \\
+\ref{eq:prune}, left & [P] Eq.~15 & the paper projects $\tauv_i$; the code (and we) project the truncated $\tauv_i'$ \\
+\ref{eq:prune}, right & [P] Eq.~17 + [Code] & the pruning rule is the paper's; the boundary convention (smallest set reaching $\ge\eta$) is the code's \\
+Table~\ref{tab:types} & [App] Eq.~25--31, [P] \S4.2 & the appendix defines the types on $\mathrm{supp}(\Ct_2)$ only; the symmetric extension to $\mathrm{supp}(\Ct_p)\cup\mathrm{supp}(\Ct_q)$ is ours \\
+\ref{eq:identity} & [Ours] & the residual and the exact identity have no counterpart; the paper's Eq.~22--23 are the special case $R_i=0$ \\
+\ref{eq:merge} & [P] Eq.~20 & verbatim (Strategy~3); Strategy~1 (Eq.~18) is the case of a constant $\alpha$ \\
+\ref{eq:recon} & [P] Eq.~21 + [Ours] & the paper's reconstruction plus the residual term $\rho(R_p+R_q)$, which is ours \\
+\ref{eq:child} & task arithmetic & standard \\
+identities after \ref{eq:child} & [P] Eq.~22--23 generalised & the paper proves them without pruning; with the residual they hold for any $\eta$ \\
+\ref{eq:head} & [Ours] & no counterpart; the paper has no classifier without a task vector \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The decomposition follows the paper's Eq.~10--17, with the authors' reference implementation (\code{svd\_merging}) as the arbiter wherever the paper is silent. Steps are per analysable layer; all linear algebra runs in float64 and is cast back to the parents' dtype at the end.
+
+\subsection{Per-parent SVD and the analysed subspace}
+\begin{equation}
+\tauv_i = U_i \Sigma_i V_i^{\top}, \qquad i\in\{p,q\}.
+\end{equation}
+Keep the leading $k_i$ singular triples whose cumulative squared energy stays at or below a fraction \code{svd\_energy} (default 0.90, the same for both parents):
+\begin{equation}
+k_i = \max\Bigl(1,\; \bigl|\{\,j : \tfrac{\sum_{s\le j}\sigma_{i,s}^2}{\sum_s \sigma_{i,s}^2} \le \code{svd\_energy}\}\bigr|\Bigr),
+\qquad
+\tauv_i' = U_i' \Sigma_i' V_i'^{\top}.
+\label{eq:trunc}
+\end{equation}
+\emph{Explanation.} Equation~\ref{eq:trunc} does not appear in the paper; it writes down what the reference code does. $\sigma_{i,s}$ are the singular values of $\tauv_i$ in decreasing order; the fraction inside the set is the share of the total squared energy $\sum_s\sigma_{i,s}^2$ held by the first $j$ singular directions; $k_i$ counts how many leading directions can be kept before that share exceeds \code{svd\_energy}, with at least one kept. $\tauv_i'$ is the rank-$k_i$ approximation built from those directions. The reference code truncates asymmetrically (0.90 for model~1, 0.99 for model~2) and discards the remainder. Here the truncation is symmetric and \emph{nothing is discarded}: the truncated part is carried by the residual of \S\ref{sec:residual}. The truncation exists to define the subspace inside which conflict types are read; \S\ref{sec:degenerate} explains why it is indispensable.
+
+\subsection{Shared (global) basis}
+\begin{equation}
+U_{\mathrm{cat}} = [\,U_p'\;\;U_q'\,], \qquad V_{\mathrm{cat}} = [\,V_p'\;\;V_q'\,].
+\end{equation}
+SVD each concatenation and keep the left singular vectors holding a fraction \code{basis\_energy} (default 0.999, the reference value) of the energy:
+\begin{equation}
+\Ug = \mathrm{lead}\bigl(U_{\mathrm{cat}},\,\code{basis\_energy}\bigr)\in\mathbb{R}^{m\times r_u},\qquad
+\Vg = \mathrm{lead}\bigl(V_{\mathrm{cat}},\,\code{basis\_energy}\bigr)\in\mathbb{R}^{n\times r_v}.
+\label{eq:basis}
+\end{equation}
+\emph{Explanation.} The paper's Eq.~13--14 write $U_{\mathrm{cat}}=U_g\Sigma_g W^{\top}$ (an SVD of the concatenation) and take $U_g$ as the global basis, without saying how many columns are kept. $\mathrm{lead}(M,e)$ denotes the operation implemented by the reference code: SVD $M$, and keep the smallest number of leading left singular vectors whose cumulative squared singular values reach a fraction $e$ of the total, i.e.\ $\mathrm{searchsorted}(\mathrm{cumsum}(d^2)/\sum d^2,\ e)+1$ columns, where $d$ are the singular values of $M$. For two parents the concatenation has $k_p+k_q$ columns, so $r_u\le k_p+k_q$ and typically $r_u<m$. \code{basis\_energy}$=1$ falls back to the numerical rank.
+
+\subsection{Task-interaction matrices and energy pruning}
+Project the \emph{truncated} task vectors onto the shared basis (paper Eq.~15) and keep, for each parent independently, the smallest set of cells holding a fraction $\eta$ of the squared energy (paper Eq.~17):
+\begin{equation}
+\hat C_i = \Ug^{\top}\,\tauv_i'\,\Vg\in\mathbb{R}^{r_u\times r_v},\qquad
+\Ct_i = \mathrm{prune}_\eta(\hat C_i),\qquad \eta=0.80 .
+\label{eq:prune}
+\end{equation}
+\emph{Explanation.} The paper's Eq.~15 projects the full task vector, $\hat C_i=\Ug^{\top}\tauv_i\Vg$; the reference code projects the rank-$k_i$ approximation $\tauv_i'$ of Eq.~\ref{eq:trunc} (its \code{delta\_updated}), and we follow the code because projecting the full vector smears the truncated part into the analysed rows and destroys the type structure (\S\ref{sec:degenerate}). Each entry $\hat C_i[r,c]=\langle\tauv_i',\,u_r v_c^{\top}\rangle$ is the strength of parent $i$ along the output direction $u_r$ and input direction $v_c$ (paper Eq.~16). $\mathrm{prune}_\eta$ is the paper's Eq.~17: rank all cells by $|\hat C_i[r,c]|^2$, keep those in the top-$\eta$ share of the total energy, zero the rest. The paper does not say whether the boundary cell is kept; we use the code's convention (the smallest set whose cumulative energy reaches at least $\eta$). $\eta=0.80$ is the modal value of the paper's Appendix Table~1; symmetry requires $\eta_p=\eta_q$. Pruned cells are not lost, they fall into the residual.
+
+\subsection{Six conflict types}
+\label{sec:types}
+Let $\mathrm{row}_Q(r)\!:=\!\exists j.\,\Ct_Q[r,j]\neq 0$ and $\mathrm{col}_Q(c)\!:=\!\exists i.\,\Ct_Q[i,c]\neq 0$. Every cell of $\mathrm{supp}(\Ct_p)\cup\mathrm{supp}(\Ct_q)$ receives exactly one type (Table~\ref{tab:types}). The paper defines the types on $\mathrm{supp}(\Ct_2)$ relative to $\Ct_1$; here the definition is applied symmetrically, a cell owned by one parent being typed by the \emph{other} parent's row/column occupancy. The masks are pairwise disjoint, cover the union, and are invariant under $p\leftrightarrow q$ (test T5).
+
+\begin{table}[h]
+\centering\small
+\caption{Type assignment for a cell $(r,c)$. $P$ is the owning parent, $Q$ the other.}
+\label{tab:types}
+\begin{tabular}{llll}
+\toprule
+Occupancy & Condition & Type & Source \\
+\midrule
+both non-zero & same sign & $\Dp$ & App.\ Eq.~29 \\
+both non-zero & opposite sign & $\Dm$ & App.\ Eq.~30 \\
+only $P$ & $\neg\mathrm{row}_Q(r)\wedge\neg\mathrm{col}_Q(c)$ & A (orthogonal) & App.\ Eq.~25 \\
+only $P$ & $\mathrm{row}_Q(r)\wedge\neg\mathrm{col}_Q(c)$ & B & main text \S4.2, code \\
+only $P$ & $\neg\mathrm{row}_Q(r)\wedge\mathrm{col}_Q(c)$ & C & main text \S4.2, code \\
+only $P$ & $\mathrm{row}_Q(r)\wedge\mathrm{col}_Q(c)$ & E (structural) & App.\ Eq.~31 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Explanation.} The appendix defines the six types only for cells where task~2 is non-zero, relative to task~1: Eq.~25 (A: $\Ct_2[r,c]\neq0$, row $r$ and column $c$ of $\Ct_1$ both empty), Eq.~26--27 (B, C: one of them empty), Eq.~28--30 (D, $\Dp$, $\Dm$: both non-zero, sign agreement), Eq.~31 (E: $\Ct_1[r,c]=0$ but its row and column both occupied), and Eq.~32 states that the six types partition $\mathrm{supp}(\Ct_2)$. Cells with $\Ct_1\neq0$, $\Ct_2=0$ have no type in the paper; the code carries them with a separate coefficient on $\Ct_1$. Because SESiL's crossover must not prefer either parent, Table~\ref{tab:types} applies the same rules in both directions: a cell owned by parent $P$ alone is typed by the occupancy of the \emph{other} parent's row and column, and a cell owned by both is $\Dp$ or $\Dm$. Restricted to $\mathrm{supp}(\Ct_q)$ this reduces to the appendix's definitions with $(1,2)\to(p,q)$; the extension is what makes the assignment symmetric in $p\leftrightarrow q$.
+
+\emph{Note on B/C.} The appendix (Eq.~26--27) and the README put the zero on the row for type~B; the main text and the code put it on the column. This implementation follows the main text and the code. B and C share a coefficient in every preset, so the choice does not change any merged weight.
+
+\subsection{Residual and the exact identity}
+\label{sec:residual}
+\begin{equation}
+R_i \;=\; \tauv_i - \Ug\,\Ct_i\,\Vg^{\top},
+\qquad\text{so that}\qquad
+\tauv_i = \Ug\,\Ct_i\,\Vg^{\top} + R_i \quad\text{exactly}.
+\label{eq:identity}
+\end{equation}
+\emph{Explanation.} This equation is ours. $\Ug\Ct_i\Vg^{\top}$ is the part of $\tauv_i$ that the typed cells represent; $R_i$ is everything else: the singular directions removed by Eq.~\ref{eq:trunc}, the directions of $U_{\mathrm{cat}},V_{\mathrm{cat}}$ dropped by \code{basis\_energy}, and the cells zeroed by $\eta$. The identity holds by definition of $R_i$, so it is exact rather than approximate; test T9 checks the implementation to a relative error below $10^{-12}$. The paper's Eq.~22--23 state the same identity for the unpruned, untruncated case, where $R_i=0$; once truncation or pruning is applied the paper (and the code) simply drop $R_i$. Keeping it is the difference between the reference construction and the one used here, called \code{hybrid\_t} in the code.
+
+\subsection{Why the truncation cannot be removed}
+\label{sec:degenerate}
+A first version of the operator used the full (untruncated) singular vectors so that the basis would be lossless by itself. For a ResNet20 convolution with $\mathrm{out}\le\mathrm{in}\cdot k\cdot k$ (20 of 21 layers) the left singular vectors of each parent already span $\mathbb{R}^{m}$, so $[\,U_p\;U_q\,][\,U_p\;U_q\,]^{\top}=2I$ and the ``shared basis'' becomes an arbitrary rotation. Row occupancy, and with it types A, B, C and E, then depends on floating-point noise and on the device. The sandbox (\S\ref{sec:sandbox}) showed that projecting the \emph{full} task vectors onto a truncated basis also destroys the type structure (the residual is smeared into the analysed rows). Classifying the truncated vectors and carrying the remainder as a residual (\code{hybrid\_t}) keeps the reference's structure and is lossless.
+
+%=====================================================================
+\section{The merge operator}
+%=====================================================================
+\label{sec:operator}
+
+\subsection{Coefficient form}
+Following the paper's Strategy~3 (Eq.~20) and reconstruction (Eq.~21), with the residual added:
+\begin{align}
+\Ct_{\mathrm{merged}}[r,c] &= \alpha_{\mathrm{type}(r,c)}\,\bigl(\Ct_p[r,c] + \Ct_q[r,c]\bigr), \label{eq:merge}\\
+\tauv_{\mathrm{merged}} &= \Ug\,\Ct_{\mathrm{merged}}\,\Vg^{\top} + \rho\,(R_p + R_q), \label{eq:recon}\\
+\thetav_{\mathrm{child}} &= \thetav_{\mathrm{core}} + \tauv_{\mathrm{merged}}. \label{eq:child}
+\end{align}
+\emph{Explanation.} Equation~\ref{eq:merge} is the paper's Eq.~20 verbatim: every cell of the merged interaction matrix is the sum of the two parents' coefficients scaled by a factor that depends only on the cell's type. Strategy~1 (paper Eq.~18) is the special case of one constant $\alpha$; Strategy~2 (Eq.~19) is the case $\alpha\in\{0,1\}$. Equation~\ref{eq:recon} is the paper's reconstruction Eq.~21 plus the term $\rho\,(R_p+R_q)$, which is ours: the paper has nothing to reconstruct outside the typed cells because it discards $R_i$, whereas here the residuals must be given a coefficient too, and $\rho$ plays for the untyped part the role that $\alpha$ plays for each type. Equation~\ref{eq:child} adds the merged task vector back to the shared core (the paper's base model). On a cell owned by one parent the sum equals that parent's value, so $\alpha=1$ keeps it whole and $\alpha=0.5$ halves it. Two exact identities hold for \emph{any} \code{svd\_energy}, \code{basis\_energy} and $\eta$ (tests T2, T3):
+\begin{equation}
+\alpha\equiv\rho\equiv\tfrac12 \;\Rightarrow\; \thetav_{\mathrm{child}} = \tfrac12(\thetav_A+\thetav_B),
+\qquad
+\alpha\equiv\rho\equiv 1 \;\Rightarrow\; \thetav_{\mathrm{child}} = \thetav_A+\thetav_B-\thetav_{\mathrm{core}} .
+\end{equation}
+\emph{Explanation.} The paper proves the second identity (Eq.~22--23) only for the unpruned case, because after pruning it drops the residual and the equivalence to task arithmetic is lost. Here both identities follow from Eq.~\ref{eq:identity}: if $\alpha\equiv\rho\equiv a$ then $\tauv_{\mathrm{merged}}=a\,\Ug(\Ct_p+\Ct_q)\Vg^{\top}+a(R_p+R_q)=a(\tauv_p+\tauv_q)$, whatever was truncated or pruned. Type-dependent behaviour exists only where $\alpha_{\mathrm{type}}\neq\rho$.
+
+\emph{Relation to running the reference code in both directions.} The operator does \emph{not} symmetrise by averaging two directional merges; Eq.~\ref{eq:merge} is applied once. It is nevertheless useful to know how it relates to that construction. The reference code computes $C^{(1\to2)}=s_1\Ct_1+\sum_t s_t\,(\Ct_2\odot M_t^{(1)})$, where the masks $M_t^{(1)}$ type the cells of $\Ct_2$ by the occupancy of $\Ct_1$. Averaging the two directions, $\tfrac12\bigl(C^{(1\to2)}+C^{(2\to1)}\bigr)$, gives for a cell owned by one parent only $\tfrac12(s_1+s_t)$ times that parent's coefficient, and for a cell owned by both $\tfrac12(s_1+s_D)$ times the sum. That is exactly Eq.~\ref{eq:merge} with $\alpha_t=\tfrac12(s_1+s_t)$, provided the two directions share the basis, which requires the symmetric truncation of \S\ref{sec:decomp} (with the code's 0.90/0.99 the two directions analyse different subspaces). Under this mapping \code{average} is $s_1=1$, all $s_t=0$; \code{sum} is $s_1=1$, all $s_t=1$; \code{single-full} is $s_1=1$, $s_{\mathrm{A,B,C,E}}=1$, $s_{D^\pm}=0$. The one thing the two-direction average cannot reproduce is the residual term, because the code discards $R_i$; our $\rho$ has no counterpart there.
+
+\subsection{Presets}
+\begin{table}[h]
+\centering\small
+\caption{Coefficient presets (\code{PRESETS} in \code{globa/operator.py}).}
+\label{tab:presets}
+\begin{tabular}{llll}
+\toprule
+Preset & $\alpha$ & $\rho$ & Meaning \\
+\midrule
+\code{sum} & all 1 & 1 & task arithmetic $\tauv_A+\tauv_B$ (Eq.~18, $\alpha=1$) \\
+\code{average} & all 0.5 & 0.5 & weight averaging $\tfrac12(\thetav_A+\thetav_B)$ (Eq.~18, $\alpha=0.5$) \\
+\code{orthogonal-full} & A$=1$, others 0.5 & 0.5 & only the theorem's orthogonal components kept whole \\
+\code{single-full} & A,B,C,E$=1$; $\Dp,\Dm=0.5$ & 0.5 & every single-owner cell kept whole, colliding cells averaged \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\code{single-full} is the operator described in proposal \S5.4 (``retain orthogonal components fully, apply type-specific weighting to overlaps''). \code{average} is Strategy~1 and is mathematically identical to whole-network weight averaging; it runs the full analysis pipeline (and logs the diagnostics) but the types do not influence the weights.
+
+\paragraph{Which coefficients exist and where their values come from.}
+The operator has seven merge coefficients: one $\alpha_t$ per type $t\in\{\mathrm{A},\mathrm{B},\mathrm{C},\mathrm{E},\Dp,\Dm\}$ (paper Eq.~20) and the residual coefficient $\rho$ (ours, Eq.~\ref{eq:recon}). The paper gives no universal values: Strategy~1 uses one constant $\alpha$ (Eq.~18; $\alpha=0.5$ is averaging, $\alpha=1$ is task arithmetic, Eq.~22--23); Strategy~2 uses $\alpha\in\{0,1\}$ (Eq.~19); for Strategy~3 the appendix reports settings found ``empirically'' per experiment, e.g.\ beneficial types at $0.7$ with $\Dm$ amplified to $1.2$ for 7B Math+Instruction (Appendix Table~3) and a uniform $0.6$ as the best setting for 13B Math+Instruction (Appendix Table~6). The reference code's defaults (Appendix~\ref{app:code}) are $s_1=1$, $\Dm=1$, $\mathrm{E}=1$ and $0$ for $\Dp$, A, B, C -- an ablation configuration, and in the code's decoupled form rather than Eq.~20. The proposal (\S5.4) asks for orthogonal components retained fully and overlaps weighted per type, ``coefficients tuned as in GLOBA's Strategy~3''.
+
+The four presets of Table~\ref{tab:presets} are therefore this thesis's choices, fixed before the evolution runs and not tuned on them: \code{average} and \code{sum} are the two exactly interpretable end points (they need the residual at $\rho=\alpha$ to remain exact, hence $\rho=0.5$ and $1$); \code{orthogonal-full} is the theorem's minimal intervention (only type~A kept whole) and turned out inert because type~A carries $1$--$2\%$ of the energy; \code{single-full} keeps every cell that only one parent uses (A, B, C, E) whole and averages colliding cells ($\Dp$, $\Dm$), i.e.\ ``sum where the parents are disjoint, average where they overlap''. Its $\Dm=0.5$ rather than the proposal's ``down-weight or drop'' follows the sandbox: $\alpha_{\Dm}\in[0,1.2]$ had no measurable effect even with $\Dm$ engineered to 28\% of the energy, while zeroing $\Dp$ was always harmful because $\alpha$ multiplies the \emph{sum} and therefore deletes the owner's own contribution too. $\rho=0.5$ in every non-\code{sum} preset means the untyped remainder is averaged. No Strategy-3 search over $\alpha$ was performed on CIFAR; offline the pre-mutation ordering is \code{sum} $>$ \code{single-full} $>$ \code{average} and all coincide after mutation (\S\ref{sec:ledger}), so a search could only move the pre-mutation score. The thresholds $\eta=0.80$, \code{svd\_energy}$=0.90$, \code{basis\_energy}$=0.999$ are not merge coefficients; their provenance is in \S\ref{sec:decomp} and Appendix~\ref{app:code}.
+
+\subsection{Label-aware classifier head}
+\label{sec:head}
+The core has no classifier, so Eq.~\ref{eq:tau} is undefined for \code{linear.weight}$\in\mathbb{R}^{C\times F}$ and \code{linear.bias}. In SESiL's regime each agent's head is an independent random initialisation of which only the agent's own $k$ rows have been trained; averaging two heads dilutes every trained row with the other parent's noise. With the parents' class sets $\mathcal{C}_A$, $\mathcal{C}_B$:
+\begin{equation}
+W_{\mathrm{child}}[c,:] =
+\begin{cases}
+W_A[c,:] & c\in\mathcal{C}_A\setminus\mathcal{C}_B,\\
+W_B[c,:] & c\in\mathcal{C}_B\setminus\mathcal{C}_A,\\
+\tfrac12\bigl(W_A[c,:]+W_B[c,:]\bigr) & \text{otherwise (shared, or unknown to both).}
+\end{cases}
+\label{eq:head}
+\end{equation}
+\emph{Explanation.} Equation~\ref{eq:head} has no counterpart in the paper. $W_A,W_B\in\mathbb{R}^{C\times F}$ are the two parents' classifier weights and row $c$ is the template for class $c$. A row is copied from the parent that was trained on that class and averaged when both or neither were; averaging in the last case only matters for classes the child will learn during mutation. The same rule applies to the bias. \code{head="average"} restores element-wise averaging. This rule is not part of GLOBA; it is a design decision motivated by the sandbox (\S\ref{sec:sandbox}), where the same backbone merge scored 0.29 with an averaged head and 0.91 with the label-aware head.
+
+\subsection{Other tensors}
+Floating 1-D tensors (BatchNorm affine parameters, running statistics) are averaged element-wise; integer buffers (\code{num\_batches\_tracked}) are copied from the canonical-first parent. SESiL's BN recalibration overwrites all of these after the merge.
+
+\subsection{Determinism and symmetry}
+\label{sec:determinism}
+The two parents are placed in a canonical order by comparing SHA-256 digests of their full state dicts; the class sets travel with their parent. Hence \code{merge(A,B,C\_A,C\_B)} and \code{merge(B,A,C\_B,C\_A)} execute the same floating-point program and are bitwise identical (test T1, four presets $\times$ two $\eta$ $\times$ two head modes). The operator is a pure function on state dicts: no data, no evaluation, no side effects.
+
+\subsection{Invariants}
+\code{python -m globa.check} runs nine tests on a real pair of exp2d agents; all pass.
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule
+T1 & symmetry: \code{merge(A,B)} $=$ \code{merge(B,A)} bitwise \\
+T2 & \code{average} $=\tfrac12(\thetav_A+\thetav_B)$ for $\eta\in\{0.8,1\}$ \\
+T3 & \code{sum} $=\thetav_A+\thetav_B-\thetav_{\mathrm{core}}$ for $\eta\in\{0.8,1\}$ \\
+T4 & $\tauv_B\equiv 0$, no truncation, \code{orthogonal-full} $\Rightarrow$ child $=\thetav_A$ bitwise \\
+T5 & masks disjoint, cover the union, per-type energies sum to the total \\
+T6 & determinism: same inputs twice, bitwise identical \\
+T7 & \code{average}: $\|\tauv_{\mathrm{merged}}\|\le\tfrac12(\|\tauv_A\|+\|\tauv_B\|)$ \\
+T8 & label head rows come from the right parent, bitwise \\
+T9 & $\tauv_i=\Ug\Ct_i\Vg^{\top}+R_i$, relative error $<10^{-12}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Agreement with the reference implementation}
+\code{globa/check\_reference.py} transcribes the authors' \code{svd\_merging} (lines 141--269) verbatim and runs it next to \code{decompose} under the authors' thresholds (0.90/0.99, $\eta=0.95/0.80$, basis 0.999). On 15 convolution layer pairs of real exp2d agents the reconstructions and the per-type energies agree to $0.00\times10^{0}$; \code{check\_reference\_mlp.py} repeats this on 8 sandbox MLP layers. The decomposition is therefore the authors'; the only departures are the symmetric truncation, the residual and the head rule, all documented above.
+
+%=====================================================================
+\section{Integration into SESiL}
+%=====================================================================
+\label{sec:integration}
+
+\subsection{Constraint}
+Nothing in \code{sesil/} or \code{run\_sesil.py} is modified (\code{git diff sesil/ run\_sesil.py} is empty). GLOBA lives in the external package \code{globa/}, which imports SESiL's stages as a library and replaces only the crossover.
+
+\subsection{The external evolution driver}
+\code{globa/run.py} restates \code{sesil.pipeline.run\_generation} / \code{run\_evolution} with a pluggable merge step. Per generation: (1) \code{sesil.evaluation.run\_evolutionary\_evaluation}; (2) \code{sesil.mating.mate\_with\_population\_info}; (3) the merge step; (4) \code{sesil.mutation.finetune\_merged\_model} (2 epochs, Adam $10^{-3}$, one full pass over the 10-class training set per epoch); (5) \code{sesil.pipeline.save\_offspring}. Loners are processed verbatim as in \code{sesil.merging.run\_merging}. Output layout (\code{gen\_N/<hash>/resnet20x4\_v0.pth.tar}, \code{csv/gen\_N/configurations.csv}, \code{run.json}) matches SESiL, so the existing plotting tools read it unchanged; an extra \code{globa\_stats.jsonl} records per-merge type shares, norm ratio and typed fraction.
+
+Three merge steps exist:
+\begin{itemize}[nosep]
+\item \code{--merge sesil}: SESiL's own \code{run\_merging} (test double). One generation from a byte-identical population reproduces \code{run\_sesil.py}'s ten offspring \emph{bitwise}, which validates the driver.
+\item \code{--merge globa}: the operator of \S\ref{sec:operator}; the child is a whole ResNet20$\times$4 that is BN-recalibrated, evaluated, mutated end-to-end and saved.
+\item \code{--merge copy-a}: parent~A's weights in a whole network, mutated end-to-end (control; see \S\ref{sec:artefact}).
+\end{itemize}
+
+\subsection{How SESiL's own crossover produces and saves an offspring}
+\label{sec:artefact}
+This was established while auditing the Phase~4 comparison and is essential for interpreting every result below. SESiL's standard mergers are applied as \emph{partial zipping} with \code{stop\_node = 21} (the original authors' configuration, \code{evolutionary\_permute\_training.py} line 821): the merged model runs only up to the end of \code{layer1}; a forward hook then feeds that activation into both parents' original \code{layer2}, \code{layer3} and heads (\code{model\_merger.py}, \code{ModelMerge.forward}, lines 534--549), returning a list of logits. Mutation trains on \code{logits[0]} only (\code{sesil/mutation.py} line 119), i.e.\ parent~A's late layers are adapted to the merged trunk's features. Saving takes \code{head\_models[0].state\_dict()} (\code{sesil/pipeline.py} lines 52--56, inherited from the original \code{save\_model} with \code{head\_index=0}): parent~A's \emph{original} \code{layer1} plus those adapted late layers. The merged trunk is discarded.
+
+Empirically, for the gen-1 child \code{0\_3\_5\_7\_8\_9} of exp2d, \code{conv1}/\code{layer1} weights differ from parent~A by $\le 4\times10^{-6}$ (untouched) while \code{layer2}/\code{layer3}/\code{linear} differ by $\approx 3\times10^{-2}$ (trained). SESiL's own evaluator scores these gen-1 children at 0.30--0.41 per-task at the start of generation~2, below their parents (0.54). Two consequences follow: (i) the three standard mergers produce bitwise-identical offspring on a shared-core population, because the only merged part is discarded (Stage~0a); (ii) every comparison between a whole-network crossover and \code{exp2d} contains this effect.
+
+%=====================================================================
+\section{The original SESiL crossover and how ours differs}
+%=====================================================================
+\label{sec:original}
+
+\subsection{Where the original merging code is}
+SESiL does not implement a merger of its own; it wraps the ZipIt!\ merging library that ships in the repository. The relevant files, all present unchanged in this repository:
+\begin{itemize}[nosep]
+\item \code{training\_scripts/evolutionary\_permute\_training.py} and \code{evolutionary\_wavg\_training.py} -- the original SESiL scripts (first imported in commit \code{36e58c5}). The crossover call is \code{Merge.transform(..., stop\_at=node\_config['stop\_node'], ...)} at lines 178, 532 and 582; the node configuration \code{\{'stop\_node': 21, 'params': \{'a': .0001, 'b': .075\}\}} is at line 821; the offspring is written by \code{save\_model} at lines 791--794, which stores \code{head\_models[head\_index].state\_dict()} with \code{head\_index=0}.
+\item \code{sesil/merging.py} -- the faithful port used by \code{run\_sesil.py}: \code{run\_merging} builds one \code{ModelMerge} per pair (line 79), calls \code{transform} with \code{stop\_at=node\_config["stop\_node"]} (lines 81--87), recalibrates BN, evaluates, and returns the \code{ModelMerge} object as the offspring (line 114). \code{sesil/config.py} maps the three method names to matching functions: \code{wavg}$\to$\code{match\_tensors\_identity}, \code{permute}$\to$\code{match\_tensors\_permute}, \code{zipit}$\to$\code{match\_tensors\_zipit} (lines 16--19).
+\item \code{model\_merger.py} -- ZipIt!'s \code{ModelMerge}: \code{compute\_metrics} (line 235) collects per-node activation covariances on a data batch; \code{compute\_transformations} (lines 275--315) computes a merge/unmerge matrix per graph node from those covariances and stops at \code{stop\_at}; \code{apply\_transformations} (line 317) rewrites the weights of every parent graph into the shared feature space; \code{get\_merged\_state\_dict} (lines 329--350) averages the transformed weights (``all parameters are averaged''); \code{transform} (lines 443--475) runs the pipeline and installs the hooks; \code{forward} (lines 512--549) implements partial zipping.
+\item \code{matching\_functions.py} -- the matching functions: \code{match\_tensors\_permute} (lines 184--219; Hungarian assignment on the activation correlation, Git Re-Basin style), \code{match\_tensors\_identity} (line 221; identity permutation = plain averaging), \code{match\_tensors\_zipit} (lines 36--157; greedy feature matching within and across models). \code{metric\_calculators.py} provides the covariance/mean metrics.
+\item \code{graphs/resnet\_graph.py} -- the computation graph over which nodes are numbered; node 21 is the input of \code{layer2.0}, i.e.\ the end of \code{layer1}.
+\end{itemize}
+
+\subsection{What the original crossover computes}
+For a pair $(A,B)$ the original path is, in order:
+\begin{enumerate}[nosep]
+\item Build a graph for each parent and run a training batch through both, recording activation covariances at every node (\code{compute\_metrics}).
+\item For each node up to \code{stop\_at}, compute from the correlation of the two parents' features a merge matrix $M$ and an unmerge matrix $M^{-}$ (\code{compute\_transformations}). For \code{permute} $M$ is a permutation that aligns $B$'s features to $A$'s; for \code{wavg} it is the identity; for \code{zipit} it may also match features within one model.
+\item Rewrite both parents' weights up to node 21 into the aligned space (\code{apply\_transformations}) and average them (\code{get\_merged\_state\_dict}). This is the only merged object: the shared trunk \code{conv1}+\code{layer1}.
+\item Keep both parents' \code{layer2}, \code{layer3} and classifier as separate ``heads'' fed by the shared trunk through forward hooks (\code{add\_unmerge\_hooks}); the model's output is a list of two logit vectors, one per parent.
+\item Evaluate: SESiL's evaluator uses head~$i$ for task~$i$'s classes, so the recorded merge score is that of the two-head object.
+\item Mutate: train on \code{logits[0]}, i.e.\ through the shared trunk and parent~A's head (\code{sesil/mutation.py} line 119).
+\item Save \code{head\_models[0]}: parent~A's original trunk (not the merged one) together with parent~A's late layers as adapted during mutation (\S\ref{sec:artefact}).
+\end{enumerate}
+On a shared-core population the permutation found in step~2 is the identity ($P=I$), so steps 2--3 reduce to averaging the two trunks, which is why \code{wavg}, \code{permute} and \code{zipit} produce bitwise-identical offspring (Stage~0a). The merging hyper-parameters \code{a}$=10^{-4}$ and \code{b}$=0.075$ are ZipIt!'s covariance regularisers and only affect step~2.
+
+\subsection{Differences to the GLOBA operator}
+\begin{table}[h]
+\centering\small
+\caption{Original SESiL crossover vs.\ the operator of \S\ref{sec:operator}.}
+\label{tab:diff}
+\begin{tabular}{p{3.4cm}p{5.6cm}p{5.6cm}}
+\toprule
+Aspect & Original SESiL (ZipIt!\ library) & GLOBA operator (\code{globa/}) \\
+\midrule
+Object merged & activations-aligned \emph{weights} of the trunk up to node 21 & \emph{task vectors} $\thetav-\thetav_{\mathrm{core}}$ of every conv and linear layer, then added back to the core \\
+Needs data & yes: a training batch to estimate activation covariances & no: pure function of the three state dicts and the class sets \\
+Alignment & permutation / feature matching from activation correlations (identity on a shared-core population) & none; the shared core makes the coordinates comparable; the per-layer shared basis $\Ug,\Vg$ is built from the parents' singular vectors \\
+Coverage & \code{conv1}+\code{layer1} merged; \code{layer2}, \code{layer3}, heads kept as two separate branches & whole network, one branch, one classifier \\
+Merge rule & element-wise average of aligned weights (\code{get\_merged\_state\_dict}) & paper Eq.~20: per-type coefficient on $\Ct_A+\Ct_B$ in the shared basis, residual at $\rho$ (Eq.~\ref{eq:merge}--\ref{eq:recon}) \\
+Classifier & both heads kept; task-wise selection at evaluation & one head, rows chosen by class ownership (Eq.~\ref{eq:head}) \\
+Symmetry & parent~$A$ is the reference space (\code{mats[0] = I}) and the saved branch & symmetric by construction (canonical hash order; T1 bitwise) \\
+What mutation trains & trunk + parent~A's branch only, on the merged trunk's features & the whole child \\
+What is saved & \code{head\_models[0]}: parent~A's original trunk + its adapted branch; the merged trunk is discarded & the merged and mutated child itself \\
+Diagnostics & merge score of the two-head object & per-layer type shares, norm ratio, typed fraction (\code{globa\_stats.jsonl}) \\
+Location & \code{sesil/merging.py}, \code{model\_merger.py}, \code{matching\_functions.py} & \code{globa/operator.py}, \code{globa/run.py} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two of these differences carry the empirical results. The last-but-two row (what is saved) is the origin of the whole-network effect measured in \S\ref{sec:phase4}; the merge-rule row is the GLOBA-specific content, whose measured effect is nil after mutation (\S\ref{sec:ledger}). Everything else about the evolutionary loop -- population evaluation, mate selection, mutation schedule, BN recalibration, loner handling -- is shared code imported from \code{sesil/} and identical across arms.
+
+%=====================================================================
+\section{Implementation inventory}
+%=====================================================================
+\label{sec:inventory}
+
+All new files are untracked additions; no tracked file under \code{sesil/} changed. The tracked figure \code{figures/fig1\_10c3.png} and \code{tools/plot\_report.py} were updated to include the GLOBA arms.
+
+\subsection{Package \code{globa/}}
+
+\paragraph{\code{globa/operator.py}} (302 lines) -- the operator.
+\begin{itemize}[nosep]
+\item Constants: \code{TYPES = ("A","B","C","E","D\_plus","D\_minus")}; \code{PRESETS} (Table~\ref{tab:presets}).
+\item \code{MergeConfig} (frozen dataclass): \code{eta=0.80}, \code{svd\_energy=0.90}, \code{basis\_energy=0.999}, \code{alpha} (dict over \code{TYPES}), \code{rho=0.5}, \code{head="label"}, \code{head\_prefix="linear."}; classmethod \code{preset(name, **kw)}.
+\item \code{is\_head(name, cfg)}, \code{is\_analysable(name, t, sd\_core, cfg)} (2-D or 4-D, present in the core, not the head), \code{as\_matrix(t)} (reshape $[\mathrm{out},\mathrm{in},k,k]\to[\mathrm{out},\mathrm{in}kk]$).
+\item \code{\_truncate(U,S,Vh,energy)} (Eq.~\ref{eq:trunc}), \code{\_lead\_basis(M, basis\_energy)} (Eq.~\ref{eq:basis}), \code{\_orthonormal\_basis(M)} (numerical rank, kept for the sandbox), \code{prune(C, eta)} (Eq.~\ref{eq:prune}), \code{classify(Cp, Cq)} (Table~\ref{tab:types}; returns six boolean masks).
+\item \code{decompose(tau\_p, tau\_q, cfg)} $\to$ \code{(Pu, Pv, Cp, Cq, masks, Rp, Rq)} (\S\ref{sec:decomp}).
+\item \code{merge\_matrix(tau\_p, tau\_q, cfg)} $\to$ \code{(tau\_merged, stats)} (Eq.~\ref{eq:merge}--\ref{eq:recon}); \code{stats} holds \code{basis\_u}, \code{basis\_v}, \code{nnz\_p}, \code{nnz\_q}, \code{energy\_frac[type]}, \code{typed\_frac\_p/q}, \code{norm\_p/q/merged}, \code{norm\_ratio}.
+\item \code{merge\_head(name, tp, tq, classes\_p, classes\_q, cfg)} (Eq.~\ref{eq:head}).
+\item \code{\_fingerprint(sd)} (SHA-256 of the state dict, \S\ref{sec:determinism}).
+\item \code{merge(sd\_a, sd\_b, sd\_core, cfg=None, classes\_a=None, classes\_b=None, return\_stats=False)} -- the public entry point.
+\end{itemize}
+
+\paragraph{\code{globa/check.py}} (174 lines) -- tests T1--T9. Flags \code{--population}, \code{--core}, \code{--pair}, \code{--ckpt}. Helpers \code{load\_sd}, \code{members}, \code{classes\_of}, \code{bitwise\_equal}, \code{analysable\_keys}.
+
+\paragraph{\code{globa/check\_reference.py}, \code{check\_reference\_mlp.py}} -- \code{reference\_decompose(delta1, delta2, svd\_energy\_threshold\_model1=0.90, svd\_energy\_threshold\_model2=0.99, c\_pruning\_energy\_c1=0.95, c\_pruning\_energy\_c2=0.80, global\_basis\_energy\_threshold=0.999)}: verbatim transcription of the authors' math, diffed against \code{decompose} on real conv layers (15/15 identical) and sandbox MLP layers (8/8).
+
+\paragraph{\code{globa/run.py}} (283 lines) -- external evolution driver (\S\ref{sec:integration}). Functions \code{classes\_of}, \code{load\_sd}, \code{\_agg(stats)} (energy-weighted aggregation of per-layer stats), \code{merge\_step\_sesil(...)}, \code{merge\_step\_globa(cfg, raw\_config, pairs, loners, csv\_file, gcfg, core\_sd, tag, stats\_path, gen)} (\code{gcfg=None} is the copy-A control), \code{run\_generation(...)}, \code{run\_evolution(...)}, \code{main}. Flags: \code{--out-root}, \code{--method-name}, \code{--init-population} (default \code{runs\_exp2d/seed0/population}), \code{--merge \{sesil,globa,copy-a\}}, \code{--preset}, \code{--eta}, \code{--head \{label,average\}}, \code{--core}, \code{--generations}, \code{--start-from} (resumes from \code{gen\_N}), \code{--seed}, \code{--dataset}, \code{--num-agents}, \code{--classes-per-agent}, \code{--updates-per-epoch} (0 = full pass, as exp2d), \code{--mutation-epochs}, \code{--device}.
+
+\paragraph{\code{globa/collect.py}} (217 lines) -- offline all-pairs (45) merge-and-evaluate on a population, one row per pair per regime. A regime is \code{preset@eta@head}; \code{DEFAULT\_REGIMES} = \{average, single-full\} $\times$ \{average, label\} at $\eta=0.80$. Functions \code{parse\_regime}, \code{classes\_of}, \code{\_floats}, \code{load\_sd}, \code{eval\_parent(raw\_config, model\_id)}, \code{aggregate\_stats(stats)} $\to$ \code{type\_A..type\_D\_minus}, \code{norm\_ratio\_min/med/max}, \code{typed\_frac\_mean}, \code{layers\_analysed}; \code{merge\_pair\_globa(raw\_config, pair, core\_sd, cfg, device)}. Output columns include parent per-class accuracies, child joint / per-task / per-class accuracies and the aggregated diagnostics. Flags \code{--population}, \code{--core}, \code{--out}, \code{--regimes}, \code{--reference}, \code{--config-name}, \code{--seed}, \code{--device}, \code{--limit}.
+
+\paragraph{\code{globa/collect\_mutated.py}} (156 lines) -- the same 45 pairs, but each child is additionally mutated exactly as in the evolution loop (\code{finetune\_merged\_model}, same loaders, epochs and learning rate) and re-scored; columns \code{pre\_*} and \code{post\_*}. \code{--preset copy-a} produces the parent-A control. Flags add \code{--mutation-epochs}, \code{--mutation-lr}, \code{--updates-per-epoch}.
+
+\paragraph{\code{globa/analyze\_mutated.py}}, \paragraph{\code{globa/analyze\_retention.py}}, \paragraph{\code{globa/analyze\_perlayer.py}} -- Spearman analyses of the diagnostics against outcomes: post-mutation scores and excess over the mean parent; per-class retention (child minus best parent, split into shared and disjoint classes; function \code{retention(row, child\_col)}); per-layer shares of $\Dm$, A, $\Dp$ and norm ratio against four outcomes with a Bonferroni note. \code{globa/analyze\_joint.py} fits the nested least-squares models of Table~\ref{tab:joint} (functions \code{fit}, \code{loo\_rmse}, \code{add\_cos}, \code{nested}).
+
+\paragraph{Sandbox (Stage $-1$).} \code{globa/sandbox.py} (MLP \code{fc1-fc2-fc3} on MNIST; basis modes \code{full}, \code{code}, \code{hybrid}, \code{hybrid\_t}, \code{ordered}; functions \code{make\_basis}, \code{decompose\_layer}, \code{assemble}, \code{energy\_shares}; directional and symmetric recipes), \code{sandbox\_v2.py} (headless backbone via \code{pretrain\_backbone(kind$\in$\{rotation,dae,random\})}, \code{train\_dae}, \code{make\_specialist}, \code{merge\_head}, \code{linear\_probe}), \code{sandbox\_v3.py} (5 seeds, post-mutation scoring, recipes \code{copyA}, \code{avg+avghead}, \code{avg+label}, \code{single+label}, \code{sum+label}; \code{build\_child}), \code{sandbox\_dminus.py} (engineered $\Dm$ via inverted inputs; $\alpha_{\Dm}$ sweep), \code{sandbox\_iter.py} (4 specialists, 6 generations, fixed vs population-mean core), \code{sandbox\_multi.py} (MultiMNIST composites, BCE heads; \code{compose}, \code{train\_bce}, \code{attr\_acc}).
+
+\subsection{Tools}
+\code{tools/collect\_merge\_data\_for.py} (all-pairs collection for SESiL's own mergers; flags \code{--merging-fn}, \code{--stop-node}, \code{--no-bn-reset}), \code{tools/eval\_generations.py} (per-model 10-class top-1 of every saved generation, optional \code{--reset-bn}), \code{tools/train\_joint\_from\_core.py} (joint-training baseline initialised from the SSL core through \code{sesil.population.load\_init\_weights}, backbone only; flags \code{--init-from}, \code{--epochs}, \code{--lr}, \code{--updates-per-epoch}).
+
+\subsection{Specification}
+\code{docs/globa\_operator\_spec.md} (v2): contract, tensor treatment, the eight steps of \code{hybrid\_t}, presets, invariants, decisions with evidence. Every design element is tagged with its source (paper, appendix, code, or a decision made here).
+
+%=====================================================================
+\section{Stage $-1$: sandbox}
+%=====================================================================
+\label{sec:sandbox}
+MLP specialists on MNIST digit subsets fine-tuned from a shared base; 5 seeds; overlap between the two specialists' digit sets swept 0--3. Findings that shaped the operator:
+\begin{itemize}[nosep]
+\item The untruncated basis is degenerate (\S\ref{sec:degenerate}); \code{hybrid\_t} recovers the reference's type structure and is lossless.
+\item With a base that already knows all classes (the paper's regime) averaging trivially works. With a headless backbone and random per-specialist heads (SESiL's regime) the head is the whole problem: same backbone merge, averaged head 0.29 vs label-aware head 0.91 on $A\cup B$.
+\item Proposal \S5.1 claims: (i) adding only a partner's orthogonal components leaves accuracy essentially unchanged -- holds; (ii) $\Dm$ components are the most damaging -- does \emph{not} hold, $\Dp$ is; $\Dm$ was harmless even when engineered to 28\% of the energy, and $\alpha_{\Dm}\in[0,1.2]$ had no effect; (iii) the full sum lies in between -- does not hold, sum is worst before mutation and best after (MultiMNIST).
+\item Mutation dominates: with enough fine-tuning steps all merge recipes and the copy-A control coincide; with few steps true merging beats copy-A.
+\item Over six sandbox generations a fixed core degenerates the decomposition ($\Dp$ share 0.98 by generation~3); a population-mean core keeps structure but changes the semantics of $\tauv$.
+\end{itemize}
+
+%=====================================================================
+\section{Stage 0: re-baselining and screening validity}
+%=====================================================================
+
+\subsection{0a -- the three standard mergers}
+One generation each of \code{wavg}, \code{permute} and \code{zipit} from a byte-identical exp2d population produced ten offspring bitwise identical across the three mergers. By \S\ref{sec:artefact} this holds for all 25 generations by construction, so \code{exp2d} (0.872) is the reference curve for all three. The same fact settles the ``raw vs permutation-aligned'' variant of proposal \S5.2: $P=I$ on a shared-core population.
+
+\subsection{0b -- do the diagnostics predict outcomes?}
+Forty-five pairs of the exp2d generation-0 population; diagnostics from \code{aggregate\_stats}; outcomes measured with SESiL's own evaluator. Throughout, $\rho_s$ denotes the Spearman rank correlation between a diagnostic and an outcome over the 45 pairs (not the residual coefficient $\rho$ of Eq.~\ref{eq:recon}), and $p$ its two-sided significance.
+
+\paragraph{Why the diagnostics are first tested one at a time, and not simply summed.} Three reasons. (i)~The paper makes a separate claim about each type -- A merges for free, $\Dm$ cancels capabilities, $\Dp$ and E are pair-dependent -- so the direct test of those claims is one correlation per type, with its own sign. (ii)~The six shares of a pair sum to one, so an unweighted sum carries no information; ``adding the signals'' only means a \emph{weighted} sum, and the weights are exactly what the proposal's screening score $G(A,B)=w_{\mathrm{orth}}E_{\mathrm{orth}}+w_{\Dp}E_{\Dp}-w_{\Dm}E_{\Dm}$ was supposed to be fitted from Stage-0 data. Fitting those weights on the 45 pairs and then reporting how well the fitted score correlates with the same 45 outcomes would be circular. (iii)~The per-layer analysis is the same question at finer resolution; the aggregate share of the first bullets is already the energy-weighted sum of the layer shares, so the per-layer test asks whether a signal exists in some layer that the sum hides. The weighted combination is then tested properly in the ``Joint model'' item below: the weights are fitted by least squares, the added block is judged by a nested $F$-test, and predictive value is judged out of sample by leave-one-out error, which is what a screening score would face in the loop.
+\begin{itemize}[nosep]
+\item \textbf{Pre-mutation child accuracy} (\code{merge\_dataset\_exp2d\_globa\_v2.csv}). After controlling for parent quality, every type share has $|\rho_s|\le 0.2$, $p>0.1$. Parent quality alone predicts the child ($\rho_s=+0.74$).
+\item \textbf{Post-mutation child accuracy} (\code{merge\_dataset\_exp2d\_globa\_mutated.csv}). Same result ($|\rho_s|\le0.2$); parent quality $\rho_s=+0.72$; the raw $\Dm$ correlation of $+0.45$ vanishes after the control ($-0.04$).
+\item \textbf{Per-class retention} (child minus best parent). Pre-mutation: shared classes $-0.12$, disjoint $-0.03$; post-mutation all positive ($+0.20$, $+0.26$). $\Dm$ vs shared-class retention $\rho_s=+0.05$ (pre) and $-0.10$ (post). The pilot's overlap effect ($\rho_s=-0.35$ with the number of shared classes) is absent on the shared-core population ($-0.06$).
+\item \textbf{Per layer.} $21\times4\times4=336$ tests, 21 at $p<.05$ (chance expectation 16.8), none survive Bonferroni; mean $|\rho_s|$ 0.08--0.17.
+\item \textbf{Later generations.} Generation~2 (agents with 5--8 classes): null. Generation~10 (all agents cover 10 classes, GLOBA's own regime): every diagnostic correlates strongly with the outcome ($|\rho_s|$ 0.63--0.79), but all of them correlate 0.67--0.90 with $\cos(\tauv_A,\tauv_B)$ and fall to $|\rho_s|\le 0.11$ after a linear control for it. The cosine is cluster structure (four near-identical weak agents, $\cos=0.97$, merge losslessly); screening by GLOBA at late generations would select near-copies.
+\item \textbf{Joint (multivariate) model.} The single-covariate control above tests each type share on its own. The proposal's screening score $G(A,B)$ would use them \emph{together}, so \code{globa/analyze\_joint.py} fits nested least-squares models over the 45 pairs -- M0: outcome $\sim$ parent quality; M1: M0 + the five free type shares (the six sum to one, so $\Dm$ is dropped); M2: M1 + typed fraction + norm ratio -- and reports $R^2$, the nested $F$-test for the added block, and the leave-one-out RMSE (the honest number at $n=45$). Table~\ref{tab:joint}: at generation~0 the type block adds nothing before ($p=0.27$) or after mutation ($p=0.67$) and \emph{worsens} the out-of-sample error in both cases. At generation~10 the five type shares alone raise $R^2$ from 0.10 to 0.97, but once $\cos(\tauv_A,\tauv_B)$ is in the base model ($R^2=0.967$) they add nothing ($p=0.24$, LOO RMSE 0.0183 $\to$ 0.0195). Used jointly, the types do not add to parent quality at generation~0 and do not add to parent similarity at generation~10.
+\begin{table}[h]
+\centering\small
+\caption{Nested linear models over the 45 pairs (\code{globa/analyze\_joint.py}). $k$ = number of coefficients; $p$ = $F$-test for the block added relative to the row above; LOO = leave-one-out RMSE.}
+\label{tab:joint}
+\begin{tabular}{llrrrr}
+\toprule
+Setting & Model & $k$ & $R^2$ & $p$ (added) & LOO \\
+\midrule
+gen 0, pre-mutation & parent quality & 2 & 0.586 & -- & 0.0583 \\
+ & + 5 type shares & 7 & 0.648 & 0.268 & 0.0619 \\
+ & + typed fraction, norm ratio & 9 & 0.671 & 0.295 & 0.0638 \\
+\midrule
+gen 0, post-mutation & parent quality & 2 & 0.493 & -- & 0.0436 \\
+ & + 5 type shares & 7 & 0.533 & 0.669 & 0.0475 \\
+ & + typed fraction, norm ratio & 9 & 0.551 & 0.489 & 0.0493 \\
+\midrule
+gen 10, pre-mutation & parent quality & 2 & 0.100 & -- & 0.0913 \\
+ & + 5 type shares & 7 & 0.972 & $<0.001$ & 0.0192 \\
+\midrule
+gen 10, pre-mutation & parent quality + $\cos(\tauv_A,\tauv_B)$ & 3 & 0.967 & -- & 0.0183 \\
+ & + 5 type shares & 8 & 0.972 & 0.240 & 0.0195 \\
+ & + typed fraction, norm ratio & 10 & 0.977 & 0.049 & 0.0193 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\item \textbf{Budget insensitivity.} On five generation-0 populations with SSL/fine-tune budgets from E3+2.0ep to E50+1.0ep (task-vector norm 0.4 to 2.6, whole-vector cosine 0.04--0.11) the type shares are flat: A 0.008--0.021, $\Dp$ 0.53--0.59, $\Dm$ 0.036--0.043. The six-type split is a property of the truncated shared basis, not of how far the specialists diverged.
+\end{itemize}
+Conclusion: hypothesis H0 (screening validity) is rejected at every level tested. Stage~1 (screening in mate choice) has no valid $G(A,B)$; the proposal's fallback (phenotypic screening by parent quality) is the only predictor with signal.
+
+\subsection{Offline contribution ledger}
+\label{sec:ledger}
+The same 45 pairs, five kinds of child, each mutated with the identical call and re-scored (per-task accuracy):
+\begin{table}[h]
+\centering\small
+\caption{Offline pre- and post-mutation scores, 45 pairs, exp2d generation 0.}
+\label{tab:ledger}
+\begin{tabular}{lccc}
+\toprule
+Child & pre joint & pre per-task & post per-task \\
+\midrule
+copy-A (parent A, whole network) & 0.251 & 0.500 & 0.7996 \\
+whole-network average + averaged head & 0.241 & 0.396 & \textbf{0.8098} \\
+whole-network average + label head (arm C's merge) & 0.326 & 0.514 & 0.7989 \\
+single-full + label head (arm D's merge) & 0.336 & 0.521 & 0.7975 \\
+sum + label head & 0.350 & 0.531 & 0.7985 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Before mutation the label head is worth $+0.085$ joint and type weighting a further $+0.007$ (single-full) to $+0.017$ (sum). After mutation all five children lie within $0.798$--$0.810$; the averaged head is $+0.011$ above the label head (37/45, Wilcoxon $p<0.001$), single-full and sum are within noise of average ($p=0.31$, $0.85$), and copy-A equals average ($p=0.82$). The only factor that survives mutation is that the child is a whole, coherent network.
+
+%=====================================================================
+\section{Phase 4: closed-loop evolution}
+%=====================================================================
+\label{sec:phase4}
+
+\subsection{Design}
+All arms share the exp2d generation-0 population (byte-identical copy), seed 0, the mating rule, 2 mutation epochs with one full pass per epoch, and 25 generations. They differ only in the crossover:
+\begin{itemize}[nosep]
+\item \textbf{exp2d}: SESiL as published (permutation merger, partial zipping, saved child per \S\ref{sec:artefact}).
+\item \textbf{Arm C}: \code{--merge globa --preset average --head label}.
+\item \textbf{Arm D}: \code{--merge globa --preset single-full --head label} (the proposal's GLOBA merger).
+\end{itemize}
+A copy-A arm was started and stopped at generation~3 at the supervisor's direction (the thesis concerns merging); a whole-network \code{average}+averaged-head arm was not run. Arm~C's process died during generation~14 and was resumed from the saved generation~13 with \code{--start-from 13}; the RNG is reseeded at resume and mating uses it, so generations 14--25 of arm~C differ from what an uninterrupted run would have produced. Arm~D ran uninterrupted.
+
+\subsection{Results}
+Figure metric: mean over the ten agents of 10-class accuracy, BatchNorm recalibrated, population evaluated at the start of generation $g$ (the quantity plotted by \code{tools/plot\_report.py}).
+\begin{table}[h]
+\centering\small
+\caption{Population accuracy by generation (figure metric).}
+\label{tab:phase4}
+\begin{tabular}{rccccc}
+\toprule
+gen & exp2d & arm C & arm D & C$-$exp2d & D$-$C \\
+\midrule
+2  & 0.198 & 0.294 & 0.297 & $+0.096$ & $+0.003$ \\
+5  & 0.584 & 0.688 & 0.713 & $+0.105$ & $+0.025$ \\
+10 & 0.766 & 0.819 & 0.823 & $+0.053$ & $+0.004$ \\
+15 & 0.816 & 0.861 & 0.861 & $+0.044$ & $+0.000$ \\
+20 & 0.850 & 0.881 & 0.881 & $+0.032$ & $-0.001$ \\
+25 & \textbf{0.872} & \textbf{0.895} & \textbf{0.893} & $+0.023$ & $-0.002$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/fig1_10c3.png}
+\caption{CIFAR-10 10C3, 10 agents: joint-training baseline; the two published SESiL runs (partial merge, offspring = parent~A's branch); the same two runs with SESiL's merger applied to the whole network and the merged network saved (\S\ref{sec:wholenet}); and the two GLOBA arms. Shaded bands are the population min--max.}
+\end{figure}
+
+\begin{itemize}[nosep]
+\item Both GLOBA arms lead exp2d at every generation; both reach exp2d's final value at generation~18. The gap narrows from $+0.10$ (generations 2--5) to $+0.02$ (generation~25).
+\item Arms C and D coincide: D$-$C has mean $+0.006$ over generations 2--25, $|D-C|\le 0.025$, and per-model BN-reset scores of the saved populations agree within $0.008$ at every generation. Type-selective weighting has no measurable effect in evolution, consistent with Table~\ref{tab:ledger}.
+\item The same-start upper bound (joint training from the SSL core, 19 epochs, lr 0.1) is 0.904; the arms end 0.009--0.011 below it.
+\item Diversity: the standard deviation of accuracy across the ten agents falls below 0.004 from generation~3 in both GLOBA arms; exp2d reaches that only at generation~25. Whole-network averaging drives the population to near-identical agents early.
+\item Diagnostics along the run (\code{globa\_stats.jsonl}): $\Dp$ share 0.54 (gen 1) $\to$ 0.87 (gen 5) $\to$ 0.97--0.99 (gen 13+); A, B, C, $\Dm$ $\to$ 0; norm ratio $\to$ 0.99 (C) / 1.01--1.04 (D). From generation~8 the task vectors are near-identical and averaging is close to the identity.
+\end{itemize}
+
+\subsection{Attribution}
+Combining \S\ref{sec:artefact}, Table~\ref{tab:ledger} and Table~\ref{tab:phase4}:
+\begin{enumerate}[nosep]
+\item The gain of the GLOBA arms over exp2d is explained by the child being a whole network that is mutated and saved as one object, in contrast to SESiL's saved offspring (parent~A's untouched trunk spliced to late layers trained on a different trunk's features).
+\item GLOBA's type-selective weighting contributes $\le 0.017$ before mutation and nothing after it, offline and in evolution.
+\item The label-aware head contributes $+0.085$ before mutation and $-0.011$ after it; whole-network averaging with an averaged head is the strongest child offline after mutation.
+\item The six-type diagnostics carry no information beyond parent quality (generation~0) or parent similarity (generation~10), and their structure does not respond to the pre-training/fine-tuning budget.
+\end{enumerate}
+
+\subsection{SESiL's own mergers applied to the whole network}
+\label{sec:wholenet}
+To separate the effect of the save artefact from the effect of the GLOBA operator, SESiL's own mergers were rerun with one change: \code{stop\_at=None} (merge every layer, classifier included, with an averaged head) and the merged network itself saved as the offspring (\code{globa.run --merge sesil-full}; \S\ref{sec:integration}). Activation metrics, matching functions, BN reset, mutation and loner handling are the original code. Three arms, 25 generations each, seed 0:
+\begin{itemize}[nosep]
+\item \textbf{F}: exp2d population, \code{permute}. On this shared-core population the permutation is the identity, so the child equals $\tfrac12(\thetav_A+\thetav_B)$ in every layer (verified to $3.6\times10^{-6}$); \code{wavg} would give the same curve.
+\item \textbf{G}: exp2d population, \code{zipit} (within-model feature matching makes it a genuinely different merge).
+\item \textbf{H}: the SESiL-origin population (\code{runs\_half}: supervised from scratch, independent initialisation, no SSL), \code{permute}, where $P\neq I$.
+\end{itemize}
+
+\begin{table}[h]
+\centering\small
+\caption{Whole-network SESiL mergers vs.\ the published partial merge and the GLOBA arms (figure metric).}
+\label{tab:wholenet}
+\begin{tabular}{rccccccc}
+\toprule
+& \multicolumn{2}{c}{SESiL-origin population} & \multicolumn{5}{c}{SSL 9\,ep + 0.3\,ep population} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-8}
+gen & partial & H whole & exp2d partial & F whole permute & G whole zipit & C GLOBA avg+label & D GLOBA sf+label \\
+\midrule
+2  & 0.112 & 0.136 & 0.198 & 0.306 & 0.305 & 0.294 & 0.297 \\
+5  & 0.178 & 0.356 & 0.584 & 0.689 & 0.678 & 0.688 & 0.713 \\
+10 & 0.522 & 0.575 & 0.766 & 0.801 & 0.795 & 0.819 & 0.823 \\
+15 & 0.684 & 0.703 & 0.816 & 0.847 & 0.843 & 0.861 & 0.861 \\
+20 & 0.768 & 0.788 & 0.850 & 0.872 & 0.869 & 0.881 & 0.881 \\
+25 & 0.804 & \textbf{0.844} & 0.872 & \textbf{0.886} & 0.884 & \textbf{0.895} & 0.893 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}[nosep]
+\item Whole-network merging beats the published partial merge at every generation on both populations: F $>$ exp2d 24/24 (gen 25 $+0.014$, gens 2--3 $+0.11$ to $+0.13$); H $>$ origin 24/24 (gen 25 $+0.040$, gen 5 $+0.18$). On the independently initialised population the whole-network children of a pair are near-random before mutation (a merge row predicts a single class), yet after mutation they are still ahead of the spliced offspring: the save artefact costs more than the merge loss even where $P\neq I$.
+\item Merger choice matters little once the network is merged whole: G is below F in 24/24 generations by 0.002--0.011 (zipit's within-model matching is a small handicap when the channels are already aligned).
+\item F and C differ only in the classifier head. The averaged head is ahead or level for generations 2--5, the label head from generation~8 on (20/24), ending $+0.009$. This reverses the offline single-step result ($-0.011$ after mutation, Table~\ref{tab:ledger}): the head's benefit accrues across generations, not within one mutation.
+\item The GLOBA arms' $+0.023$ over exp2d therefore decomposes into about $+0.014$ from merging the whole network and saving it, about $+0.009$ from the label-aware head, and nothing measurable from type-selective weighting (C vs.\ D).
+\end{itemize}
+
+%=====================================================================
+\section{Limitations and open items}
+%=====================================================================
+\begin{itemize}[nosep]
+\item Single seed throughout; the evolution arms are one run each.
+\item Arm~C was resumed at generation~14 with a reseeded RNG.
+\item No copy-A arm was completed (stopped at generation~3 at the supervisor's direction), so the closed-loop cost of the save artefact is read from the whole-network standard-merger arms (\S\ref{sec:wholenet}) rather than from a non-merging control.
+\item CIFAR-10 with $k=3$ is a low-overlap regime; $k=7$, CIFAR-100 and CelebA (proposal \S4) were not run. High overlap is where GLOBA's type structure would be most likely to appear; the generation-10 analysis is the only evidence from that regime and it reduces to parent similarity.
+\item Strategy-3 coefficient tuning was not performed; offline the best pre-mutation preset was \code{sum}, and no preset differs after mutation.
+\item The SSL method pilot (rotation, SimCLR vs SimSiam) was not run; the existing budget sweep is within SimSiam only.
+\end{itemize}
+
+%=====================================================================
+\section{Reproduction}
+%=====================================================================
+\begin{lstlisting}
+# operator invariants (T1-T9) and reference agreement
+python -m globa.check
+python -m globa.check_reference
+# offline 45-pair collections (generation-0 population)
+python -m globa.collect --regimes average@0.80@label single-full@0.80@label
+python -m globa.collect_mutated --preset average --head label --out merge_dataset_exp2d_globa_mutated.csv
+python -m globa.collect_mutated --preset copy-a --out merge_dataset_exp2d_copya_mutated.csv
+python -m globa.analyze_mutated ; python -m globa.analyze_retention ; python -m globa.analyze_perlayer ; python -m globa.analyze_joint
+# closed-loop arms (25 generations, ~6.5 h each on one 8 GB GPU)
+python -m globa.run --out-root runs_phase4_avg_label --merge globa --preset average \
+    --head label --generations 25 --seed 0 --updates-per-epoch 0 --mutation-epochs 2
+python -m globa.run --out-root runs_phase4_sf_label --merge globa --preset single-full \
+    --head label --generations 25 --seed 0 --updates-per-epoch 0 --mutation-epochs 2
+# scoring and figure
+python tools/eval_generations.py runs_phase4_sf_label/seed0/globa_single-full_label --gens 1-25 --reset-bn
+python tools/plot_report.py
+\end{lstlisting}
+
+\appendix
+%=====================================================================
+\section{Reference code excerpts behind the [Code]-tagged equations}
+%=====================================================================
+\label{app:code}
+Source: \url{https://github.com/Zehao-Liu/GLOBA}, commit \code{b304d43e} (2025-11-18), file \code{model\_merging\_methods/merging\_methods.py}, function \code{svd\_merging} (lines 58--280). The same hyper-parameters are reproduced in the repository README under ``HYPERPARAMETER CONTROL AREA'' (README lines 38--60). Local clone used for the comparison: \code{C:\textbackslash Users\textbackslash 32063\textbackslash Desktop\textbackslash GLOBA}. Line numbers refer to that file. Our transcription of this math for the equivalence test is \code{globa/check\_reference.py}, function \code{reference\_decompose}.
+
+\subsection*{Hyper-parameters (lines 90--109; README lines 41--60)}
+\begin{lstlisting}[language=Python]
+svd_energy_threshold_model1 = 0.90
+svd_energy_threshold_model2 = 0.99
+c_pruning_energy_c1 = 0.95
+c_pruning_energy_c2 = 0.80
+scale_c1_identity = 1.0       # The base C1 matrix itself
+scale_c2_type_D_minus = 1.0   # Type D- (Opposite-sign Direct Overlap)
+scale_c2_type_D_plus = 0.0    # Type D+ (Same-sign Direct Overlap)
+scale_c2_type_E = 1.0         # Type E (Structural Overlap)
+scale_c2_type_B = 0.0         # Type B (Pure Row Orthogonality)
+scale_c2_type_C = 0.0         # Type C (Pure Column Orthogonality)
+scale_c2_type_A = 0.0         # Type A (Complete Orthogonality)
+global_basis_energy_threshold = 0.999
+\end{lstlisting}
+Only $\eta$ (\code{c\_pruning\_energy\_*}) appears in the paper (Appendix Table~1). The SVD truncation thresholds and the global-basis threshold exist only here.
+
+\subsection*{Per-parent SVD truncation $\to$ Eq.~\ref{eq:trunc} (lines 141--150)}
+\begin{lstlisting}[language=Python]
+U1, S1, V1t = torch.linalg.svd(delta1[param_name], full_matrices=False); V1 = V1t.T
+U2, S2, V2t = torch.linalg.svd(delta2[param_name], full_matrices=False); V2 = V2t.T
+total_energy1 = torch.sum(S1 ** 2)
+k1 = max(1, (torch.cumsum(S1 ** 2, dim=0) / total_energy1 <= svd_energy_threshold_model1).sum().item()) if total_energy1 > 0 else 1
+total_energy2 = torch.sum(S2 ** 2)
+k2 = max(1, (torch.cumsum(S2 ** 2, dim=0) / total_energy2 <= svd_energy_threshold_model2).sum().item()) if total_energy2 > 0 else 1
+delta1_updated = U1[:, :k1] @ torch.diag(S1[:k1]) @ V1[:, :k1].T
+delta2_updated = U2[:, :k2] @ torch.diag(S2[:k2]) @ V2[:, :k2].T
+\end{lstlisting}
+\code{k1}/\code{k2} is the count in Eq.~\ref{eq:trunc} (note the $\le$: the kept energy is at most the threshold); \code{delta\_updated} is $\tauv_i'$. Our \code{\_truncate} implements the same count with one threshold for both parents.
+
+\subsection*{Global basis $\to$ Eq.~\ref{eq:basis} (lines 152--166)}
+\begin{lstlisting}[language=Python]
+U_cat = torch.cat((U1[:, :k1], U2[:, :k2]), dim=1)
+V_cat = torch.cat((V1[:, :k1], V2[:, :k2]), dim=1)
+Pu_double, Du_double, _ = torch.linalg.svd(U_cat.double(), full_matrices=False)
+total_energy_u = torch.sum(Du_double**2)
+k_u = torch.searchsorted(torch.cumsum(Du_double**2, dim=0) / total_energy_u, global_basis_energy_threshold).item() + 1 if total_energy_u > 0 else 1
+Pu = Pu_double[:, :k_u].to(U_cat.dtype)
+# identical block for V_cat -> Pv
+\end{lstlisting}
+The concatenation is the paper's Eq.~11--12 (of the \emph{truncated} vectors); the SVD is Eq.~13--14; \code{k\_u} (the \code{searchsorted}$+1$ count) is the energy cut that the paper does not specify. Our \code{\_lead\_basis} is this block.
+
+\subsection*{Projection $\to$ Eq.~\ref{eq:prune}, left (lines 172--173)}
+\begin{lstlisting}[language=Python]
+C1 = torch.matmul(torch.matmul(Pu.T, delta1_updated), Pv)
+C2 = torch.matmul(torch.matmul(Pu.T, delta2_updated), Pv)
+\end{lstlisting}
+Paper Eq.~15 with $\tauv_i$ replaced by the truncated \code{delta\_updated}.
+
+\subsection*{Energy pruning $\to$ Eq.~\ref{eq:prune}, right (lines 176--197 for \code{C1}; 199--216 identical for \code{C2})}
+\begin{lstlisting}[language=Python]
+energy_contributions_c1 = C1**2
+total_energy_c1 = torch.sum(energy_contributions_c1)
+if total_energy_c1.item() == 0.0 or c_pruning_energy_c1 <= 0.0: C1_masked = torch.zeros_like(C1)
+elif c_pruning_energy_c1 >= 1.0: C1_masked = C1.clone()
+else:
+    sorted_energy_c1, sorted_indices_c1 = torch.sort(energy_contributions_c1.flatten(), descending=True)
+    cumulative_energy_c1 = torch.cumsum(sorted_energy_c1, dim=0)
+    energy_threshold_value_c1 = total_energy_c1 * c_pruning_energy_c1
+    num_elements_to_keep_c1 = torch.searchsorted(cumulative_energy_c1, energy_threshold_value_c1, right=False).item() + 1
+    retained_count_c1 = min(num_elements_to_keep_c1, C1.numel())
+    mask_flat_c1 = torch.zeros(C1.numel(), dtype=torch.bool, device=C1.device)
+    mask_flat_c1[sorted_indices_c1[:retained_count_c1]] = True
+    C1_masked = torch.where(mask_flat_c1.view_as(C1), C1, torch.zeros_like(C1))
+\end{lstlisting}
+Paper Eq.~17 with the boundary convention ``smallest set whose cumulative energy reaches $\ge\eta$''. Our \code{prune} is this block with a stable sort.
+
+\subsection*{Six masks $\to$ Table~\ref{tab:types} (lines 224--260)}
+\begin{lstlisting}[language=Python]
+C1_nonzero_mask = C1_masked != 0
+C2_nonzero_mask = C2_masked != 0
+# D-  : C1_nonzero_mask & C2_nonzero_mask & (torch.sign(C1_masked) != torch.sign(C2_masked))
+# D+  : C1_nonzero_mask & C2_nonzero_mask & (torch.sign(C1_masked) == torch.sign(C2_masked))
+C1_occupied_rows_mask = C1_nonzero_mask.any(dim=1)
+C1_occupied_cols_mask = C1_nonzero_mask.any(dim=0)
+# E   : (C1_masked == 0) & C1_occupied_rows_mask.unsqueeze(1) & C1_occupied_cols_mask
+# B   :  C1_occupied_rows_mask.unsqueeze(1) & ~C1_occupied_cols_mask
+# C   : ~C1_occupied_rows_mask.unsqueeze(1) &  C1_occupied_cols_mask
+# A   : ~C1_occupied_rows_mask.unsqueeze(1) & ~C1_occupied_cols_mask
+\end{lstlisting}
+Each mask is applied to \code{C2\_masked}, so the types are defined on $\mathrm{supp}(\Ct_2)$ relative to $\Ct_1$ (Appendix Eq.~25--32). B puts the zero on the column (\code{\~{}C1\_occupied\_cols\_mask}), agreeing with the main text and disagreeing with Appendix Eq.~26. Our \code{classify} applies these rules in both directions (\S\ref{sec:types}).
+
+\subsection*{Merge and reconstruction (lines 218--221, 233--266, 268)}
+\begin{lstlisting}[language=Python]
+C_merged = torch.zeros_like(C1)
+if scale_c1_identity != 0:
+    C_merged += C1_masked * scale_c1_identity
+# for each type t with scale_c2_type_t != 0:
+#     C_merged += (C2_masked * mask_t) * scale_c2_type_t
+delta_merged = torch.matmul(torch.matmul(Pu, C_merged), Pv.T)
+merged_model_params[param_name].add_(delta_merged)
+\end{lstlisting}
+The \emph{reference code's} merge is not the paper's Eq.~20: it keeps $\Ct_1$ whole with one coefficient and adds each type of $\Ct_2$ with its own coefficient (``each component plus the base C1 can be independently scaled''), i.e.\ $C_{\mathrm{merged}}=s_1\Ct_1+\sum_t s_t\,(\Ct_2\odot M_t)$, which coincides with Eq.~20 only when all coefficients are equal. The paper's Eq.~20 scales the \emph{sum} $\Ct_1+\Ct_2$ per type. \textbf{Our operator implements the paper's Eq.~20 as written} (Eq.~\ref{eq:merge}; \code{merge\_matrix} in \code{globa/operator.py}: \code{Cm += alpha[t] * ((Cp + Cq) * masks[t])}), because Eq.~20 is symmetric in the two parents whereas the code's form designates a base model, which a crossover must not do. The last two lines are Eq.~21 and the task-arithmetic add-back (our Eq.~\ref{eq:recon}--\ref{eq:child} without the residual term). The README defaults shown above (\code{D-}$=1$, \code{E}$=1$, everything else $0$) are an ablation setting, not a recommended merge.
+
+\subsection*{What the code does not have}
+No residual (everything outside the kept cells is dropped; our Eq.~\ref{eq:identity}); no classifier rule (LLaMA's \code{lm\_head} is treated as any other 2-D tensor; our Eq.~\ref{eq:head}); skipped layers (\code{skip\_layer\_avg\_weight\_model1/2}, lines 132--139) are averaged $0.5/0.5$; buffers are never visited (\code{named\_parameters()} only); the two models are \code{models\_to\_merge[0]} and \code{[1]}, hard-coded.
+
+\end{document}

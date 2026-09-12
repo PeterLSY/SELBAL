@@ -1,0 +1,9 @@
+[fig2grid 2026-08-01 03:11:40] starting exp2f (6+0.5) (backbone_e6, sub-epochs 0.16667, 25 gens)
+[fig2grid 2026-08-01 16:18:26] exp2f (6+0.5) exited rc=0
+[fig2grid 2026-08-01 16:18:26] starting exp2g (6+1) (backbone_e6, sub-epochs 0.33333, 25 gens)
+[fig2grid 2026-08-02 07:45:15] exp2g (6+1) exited rc=0
+[fig2grid 2026-08-02 07:45:15] starting exp2h (6+1.5) (backbone_e6, sub-epochs 0.5, 25 gens)
+[fig2grid 2026-08-02 20:17:11] exp2h (6+1.5) exited rc=0
+[fig2grid 2026-08-02 20:17:12] starting exp2i (3+0.3, low-low corner) (backbone_e3, sub-epochs 0.1, 25 gens)
+[fig2grid 2026-08-03 08:53:06] exp2i (3+0.3, low-low corner) exited rc=0
+[fig2grid 2026-08-03 08:53:06] fig2 grid queue finished

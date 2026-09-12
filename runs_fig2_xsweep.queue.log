@@ -1,0 +1,8 @@
+[fig2xsweep 2026-08-01 03:14:35] first queue / run_sesil.py active (5 procs); waiting
+[fig2xsweep 2026-08-03 08:53:24] idle confirmed
+[fig2xsweep 2026-08-03 08:53:24] starting exp2j (3+1.5) (backbone_e3, sub-epochs 0.5, 25 gens)
+[fig2xsweep 2026-08-03 21:03:57] exp2j (3+1.5) exited rc=0
+[fig2xsweep 2026-08-03 21:03:58] idle confirmed
+[fig2xsweep 2026-08-03 21:03:58] starting exp2k (9+1.5) (backbone_e9, sub-epochs 0.5, 25 gens)
+[fig2xsweep 2026-08-04 09:27:13] exp2k (9+1.5) exited rc=0
+[fig2xsweep 2026-08-04 09:27:13] fig2 x-sweep queue finished

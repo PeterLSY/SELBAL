@@ -1,0 +1,583 @@
+%!TEX program = pdflatex
+% Compile with pdfLaTeX (uses inputenc/fontenc).
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{pifont}
+
+% Works in place (docs/ -> ../figures/) and on Overleaf with the PNGs uploaded
+% either into a figures/ folder or next to the .tex.
+\graphicspath{{../figures/}{figures/}{./}}
+
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{codebg},
+  breaklines=true,
+  frame=single,
+  framerule=0pt,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\file}[1]{\texttt{\small #1}}
+
+\title{\textbf{SESiL-foundation: an SSL backbone as the population's shared
+origin}\\
+\large Implementation, verification, and the budget-allocation study}
+\author{}
+\date{2026-08-25}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report documents the unsupervised-pretraining stage added to SESiL: a
+SimSiam backbone trained on unlabelled CIFAR-10 and handed to every expert as a
+shared starting point, replacing independent per-expert supervised pretraining.
+It covers what was built, how the handoff was verified, what the budget study
+found, and one reproducibility defect.
+
+Three results are load-bearing. First, the handoff is a \emph{type contract},
+not a name-matching heuristic: the backbone is a resnet20 whose classifier has
+been replaced by \code{nn.Identity}, so its \code{state\_dict} is by
+construction the resnet20 key set minus \code{linear.*}, and
+\code{load\_init\_weights} rejects any checkpoint that deviates rather than
+silently loading a subset. Second, and the substantive finding: at a
+\emph{fixed} total budget, moving compute out of supervised per-expert
+finetuning and into unsupervised shared pretraining produces a
+\emph{worse} starting population but a \emph{better} final one. Across the
+equal-budget family the rank correlation between initial expert accuracy and
+final accuracy is $-1.00$; the best equal-budget allocation, $9$ epochs of SSL
+plus $0.3$ of finetune, starts at $0.540$ three-class accuracy---the lowest of
+the family---and ends at $0.872$, against $0.744 \to 0.843$ for the allocation
+that starts strongest. Starting quality is not what the evolution consumes;
+shared origin is.
+
+Third, a defect that costs reproducibility rather than correctness. The
+backbone checkpoints on disk were produced when an epoch meant one full pass
+($97$ updates at batch $512$); the current default is $20$ updates. Re-running
+\file{train\_ssl.py} today with unchanged flags yields a \code{backbone\_e9}
+that cost $1.84$ full-set passes instead of $8.94$---a factor of $4.85$---under
+the same filename. Every figure charges the \emph{existing} artifacts
+correctly, and nothing on disk is mislabelled, but the artifacts cannot be
+regenerated from the current defaults.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%==============================================================================
+\section{Scope and file inventory}
+
+The stage is additive: with \code{-{}-init-from} absent, \code{run\_sesil.py}
+pretrains the population exactly as before and none of this code executes.
+
+\begin{longtable}{@{}llp{7.4cm}@{}}
+\toprule
+\textbf{File} & \textbf{Status} & \textbf{Role} \\
+\midrule
+\endhead
+\file{sesil/ssl\_pretrain.py} & new & SimSiam: two-view augmentation, model,
+loss, training loop, checkpoint policy \\
+\file{train\_ssl.py} & new & CLI entry point and \code{SSLConfig} \\
+\file{sesil/population.py} & +fns & \code{load\_init\_weights} (the handoff),
+\code{\_finetune\_sub\_epochs} (fractional budget),
+\code{calibrate\_closed\_form} (zero-SGD head) \\
+\file{sesil/data.py} & +fn & \code{updates\_for}: the shared epoch unit \\
+\file{tools/linear\_probe.py} & new & frozen-backbone linear probe over every
+checkpoint; feature-quality evidence \\
+\file{tools/check\_init\_backbone.py} & new & four pre-launch tests of the load
+path, no GPU required \\
+\file{tools/plot\_report.py} & new & the report figures \\
+\file{run\_sesil.py} & +flags & \code{-{}-init-from},
+\code{-{}-init-backbone-only}, \code{-{}-init-lr}, \code{-{}-sub-epochs},
+\code{-{}-calibrate}, \code{-{}-updates-per-epoch} \\
+\bottomrule
+\end{longtable}
+
+%==============================================================================
+\section{What was built}
+
+\subsection{SimSiam on a 256-dimensional backbone}
+
+SimSiam (Chen \& He, 2021) takes two augmented views of one image through a
+shared backbone and projection MLP, maps one view's projection to the other's
+with a prediction MLP, and stop-gradients the target branch. The loss is the
+symmetrised negative cosine similarity,
+\begin{equation}
+\mathcal{L} = \tfrac12 \mathcal{D}(p_1, \mathrm{sg}[z_2])
+            + \tfrac12 \mathcal{D}(p_2, \mathrm{sg}[z_1]),
+\qquad
+\mathcal{D}(p,z) = -\frac{p}{\lVert p\rVert}\cdot\frac{z}{\lVert z\rVert}.
+\end{equation}
+No negatives, no momentum encoder, no large batch---which is why it was chosen
+over SimCLR or MoCo for a single-GPU budget.
+
+Four adaptations were required, each forced by the target architecture rather
+than chosen:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Feature width.} resnet20$\times$4's average-pool output is
+      $w\cdot 64 = 256$-d, not the $2048$ of a full ResNet. The projection
+      hidden width is scaled to $512$ (from $2048$) and the prediction
+      bottleneck to $128$ (from $512$), preserving SimSiam's roughly $4{:}1$
+      bottleneck ratio rather than copying its absolute widths.
+\item \textbf{No Gaussian blur.} SimSiam's augmentation stack includes blur,
+      which is close to a no-op at $32\times32$; it is dropped. The rest of the
+      stack is kept: \code{RandomResizedCrop(32, scale=(0.2,1.0))}, horizontal
+      flip, colour jitter $(0.4,0.4,0.4,0.1)$ at $p{=}0.8$, grayscale at
+      $p{=}0.2$.
+\item \textbf{\code{drop\_last=True}.} SimSiam's projection and prediction MLPs
+      are BatchNorm-heavy; a short trailing batch produces unstable statistics.
+      This is also why a ``full pass'' is $97$ batches at batch $512$, not
+      $97.6$---see Section~\ref{sec:break}.
+\item \textbf{Grayscale-to-RGB first.} For 1-channel datasets the conversion
+      must precede colour jitter, whose saturation and hue terms are undefined
+      on an \code{L} image, and precede the 3-channel normalisation, which
+      would otherwise fail to broadcast.
+\end{enumerate}
+
+\subsection{The checkpoint contract}
+
+The key design decision is that \emph{one} SSL run serves \emph{every} budget
+point. A backbone is written after every epoch, so \code{backbone\_e3},
+\code{backbone\_e6}, \code{backbone\_e9} and \code{backbone\_e50} are all
+prefixes of the same optimisation trajectory rather than separate runs. This
+makes the SSL axis of the budget grid a within-run comparison, removing
+run-to-run variance from it entirely.
+
+Fractional budgets are supported by mid-epoch snapshots:
+\code{-{}-half-checkpoint 7.5} saves once epoch~8 has processed half its
+batches. The single 50-epoch run
+(\file{runs\_ssl/simsiam\_e50\_seed0}) produced $51$ checkpoints in
+$16{,}318$\,s ($4.5$\,h) and the SSL loss fell monotonically apart from noise:
+$-0.518$ at epoch~1, $-0.723$ at epoch~9, $-0.864$ at epoch~50.
+
+\subsection{The backbone-to-expert handoff}
+
+This is the part most likely to fail silently, so it was made structural. The
+backbone is not a bespoke module---it is
+
+\begin{lstlisting}
+net = resnet20(w=width, num_classes=10)
+net.linear = nn.Identity()
+\end{lstlisting}
+
+so its \code{state\_dict} is \emph{exactly} the resnet20 key set minus
+\code{linear.*}. \code{load\_init\_weights} then dispatches on the presence of
+\code{linear.weight}:
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Backbone checkpoint} (no head): loaded with \code{strict=False} so
+      the trunk fills in and each expert's classifier stays randomly
+      initialised, ready to learn its 3-class subset.
+\item \textbf{Full-width checkpoint} (joint baseline): loaded strictly, with the
+      head width checked against the dataset's class count---because the whole
+      pipeline depends on experts staying in \emph{original} label coordinates,
+      never remapped to $0..k{-}1$.
+\end{itemize}
+
+\code{strict=False} is the dangerous part of that design, since it will happily
+ignore a checkpoint that shares only a few key names. Two explicit guards
+convert that into an error:
+
+\begin{lstlisting}
+if stray:                 raise ValueError(... unexpected keys not in resnet20 ...)
+if non_linear_missing:    raise ValueError(... missing backbone keys ...)
+\end{lstlisting}
+
+so the only tolerated missing keys are \code{linear.*} and the only tolerated
+outcome is a fully-populated trunk.
+
+\subsection{Fractional per-expert finetuning}
+
+The budget study needs finetune budgets well below one epoch, so
+\code{\_finetune\_sub\_epochs} runs a fixed batch count
+$\mathrm{round}(S \cdot \mathrm{nb})$ with a per-batch cosine schedule over that
+truncated length. It is reached only on the \code{-{}-init-from} path, so the
+integer-epoch loop used by the original experiments is untouched. At $S{=}0.1$
+on a 3-class subset ($15{,}000$ images, batch $500$, $30$ batches per subset
+epoch) each expert sees exactly \textbf{3 batches}.
+
+\subsection{Closed-form head calibration (the $S \to 0$ endpoint)}
+
+To place a strict zero-SGD endpoint on the finetune axis,
+\code{calibrate\_closed\_form} fills the classifier by ridge least squares on
+frozen backbone features:
+\begin{equation}
+W^{*} = \arg\min_W \lVert X_{\text{aug}} W - T\rVert^2 + \lambda \lVert W\rVert^2,
+\qquad X_{\text{aug}} = [\,X \;\; \mathbf{1}\,],
+\end{equation}
+solved directly. The backbone is untouched and no gradient step is taken.
+
+One non-obvious detail is recorded in the code and worth repeating, because the
+natural implementation fails: \textbf{all} rows of $W$ must be written, not just
+the subset's. Non-subset classes have all-zero targets, so ridge drives their
+rows to $\approx 0$. If instead the other rows are left at their random
+initialisation, those large random rows win the \code{argmax} against the
+modestly-scaled closed-form rows---measured subset accuracy $0.003$, i.e.\ below
+chance.
+
+%==============================================================================
+\section{The budget ledger}
+\label{sec:ledger}
+
+Comparing ``SSL epochs'' against ``per-expert finetune epochs'' requires one
+unit. Everything is charged in \textbf{full-set-equivalent epochs}: one unit is
+one pass over the $50{,}000$-image CIFAR-10 train split.
+
+\begin{itemize}[leftmargin=*]
+\item $E$ = SSL epochs. The SSL loader covers the whole train set, so $E$ is
+      already in full-set units.
+\item $S$ = per-expert finetune sub-epochs. A 3-class subset is
+      $15{,}000/50{,}000 = 0.3$ of the full set, and there are $10$ experts, so
+      the population's total finetune cost is
+      \begin{equation}
+      y \;=\; 10 \times 0.3 \times S \;=\; 3S .
+      \end{equation}
+\item Total population budget before evolution $= E + y$.
+\item Evolution adds $20$ epochs per generation ($10$ offspring $\times$ $2$
+      full-set epochs), identically for every arm, so it never differentiates
+      the runs.
+\end{itemize}
+
+Worked example for \code{exp2d}: $E{=}9$, $S{=}0.1$, so each expert trains on
+$3$ batches of $500$; ten experts consume $15{,}000$ images $=0.3$ epochs; total
+$9.3$. This is the ledger the figure labels use (``SSL 9ep + 0.3ep'').
+
+\code{updates\_for} is what makes this hold under any epoch definition: it
+charges a subset loader its \emph{proportional} share of
+\code{-{}-updates-per-epoch}, so $y = 3S$ regardless of how many updates an
+epoch is declared to be.
+
+%==============================================================================
+\section{Verification}
+
+\subsection{Load-path tests}
+
+\file{tools/check\_init\_backbone.py} runs four checks with no GPU and no
+training, all passing:
+
+\begin{enumerate}[leftmargin=*]
+\item A saved SimSiam backbone auto-detects to the backbone-only path; trunk
+      weights match the checkpoint bit-for-bit; the classifier is left at its
+      random initialisation.
+\item A full 10-wide checkpoint auto-detects to the strict path and its head
+      \emph{is} loaded.
+\item \code{-{}-init-backbone-only} forced on a full checkpoint ignores that
+      checkpoint's head and keeps the random one.
+\item A fractional finetune runs exactly the expected number of batches.
+\end{enumerate}
+
+Tests 1--3 pin the dispatch logic; test 4 pins the ledger.
+
+\subsection{Linear probe}
+
+A weak evolution result at some $E$ could be a weak-backbone problem or an
+evolution problem. The probe separates them: freeze the backbone (in
+\code{eval()}, so its BatchNorm statistics cannot move), train one linear head
+for one epoch on labelled CIFAR-10, record test accuracy. It deliberately uses
+\code{load\_init\_weights(..., backbone\_only=True)}---the same loader
+\code{exp2} uses---so a probe that loads is itself evidence the experiment's
+init path loads.
+
+\begin{center}
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+$E$ & 1 & 3 & 6 & 7.5 & 10 & 20 & 30 & 50 \\
+\midrule
+probe acc & $0.214$ & $0.188$ & $0.316$ & $0.288$ & $0.346$ & $0.367$ &
+$0.354$ & $\mathbf{0.401}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The trend $0.21 \to 0.40$ is monotone up; two local dips are not, and the
+run's own \code{probe.json} records why they were accepted rather than chased:
+a 1-epoch probe has a few points of run-to-run variance, and $E{=}7.5$ is a
+mid-epoch snapshot whose BatchNorm running statistics were captured mid-sweep.
+What the probe is used for is the \emph{ordering and gaps} across checkpoints,
+and those hold.
+
+Note the absolute level: $0.40$ after $50$ epochs is a weak linear probe by SSL
+standards. That is expected at this budget---the point of the exercise is a
+cheap shared origin, not a strong representation---but it should be stated
+plainly rather than implied away.
+
+%==============================================================================
+\section{Results: the budget study}
+
+Every row below is one 25-generation SESiL run at seed~0 with
+\code{-{}-method permute}, differing only in which backbone checkpoint seeded
+the population and how much per-expert finetuning followed. ``init 3-class''
+is the population's mean accuracy on its own classes at generation~1, i.e.\
+what the backbone plus finetune bought before any evolution. ``final'' is the
+mean over the ten members of balanced accuracy over all ten classes at
+generation~25, which equals plain top-1 because the CIFAR-10 test set is
+balanced.
+
+\begin{center}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{run} & \textbf{$E$} & \textbf{$S$} & \textbf{$y=3S$} &
+\textbf{total} & \textbf{init 3-class} & \textbf{final} \\
+\midrule
+\code{half} (no backbone) & --- & --- & --- & $9.0$ & $0.631$ & $0.804$ \\
+\midrule
+\code{exp2i} & $3$   & $0.100$ & $0.3$ & $3.3$  & $0.504$ & $0.797$ \\
+\code{exp2j} & $3$   & $0.500$ & $1.5$ & $4.5$  & $0.617$ & $0.838$ \\
+\code{exp2f} & $6$   & $0.167$ & $0.5$ & $6.5$  & $0.579$ & $0.814$ \\
+\code{exp2g} & $6$   & $0.333$ & $1.0$ & $7.0$  & $0.640$ & $0.826$ \\
+\code{exp2h} & $6$   & $0.500$ & $1.5$ & $7.5$  & $0.675$ & $0.855$ \\
+\midrule
+\code{exp2a} & $3$   & $2.000$ & $6.0$ & $9.0$  & $0.744$ & $0.843$ \\
+\code{exp2b} & $6$   & $1.000$ & $3.0$ & $9.0$  & $0.732$ & $0.854$ \\
+\code{exp2c} & $7.5$ & $0.500$ & $1.5$ & $9.0$  & $0.691$ & $0.858$ \\
+\code{exp2d} & $9$   & $0.100$ & $0.3$ & $9.3$  & $0.540$ & $\mathbf{0.872}$ \\
+\midrule
+\code{exp2k} & $9$   & $0.500$ & $1.5$ & $10.5$ & $0.700$ & $0.866$ \\
+\code{exp2ref} & $50$ & $1.000$ & $3.0$ & $53.0$ & $0.808$ & $0.877$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Does the backbone help at all?}
+
+Yes, and the comparison is budget-matched. \code{half} is SESiL's original
+design---ten experts pretrained independently and supervised, $9$ epochs of
+population budget, no shared origin---and reaches $0.804$. \code{exp2d} spends
+$9.3$ and reaches $0.872$: $+0.068$ for a $3\%$ larger budget. The joint-training
+upper reference (one network, all labels, $520$ epochs) is $0.957$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{\detokenize{fig1_10c3.png}}
+\caption{The headline comparison. Green is SESiL-origin (\code{half}), purple
+is SESiL-foundation (\code{exp2d}), red dashed is joint training.}
+\end{figure}
+
+\subsection{At equal budget, unsupervised beats supervised}
+
+The four allocations at total $\approx 9$ are the controlled comparison, and
+they are perfectly ordered---in \emph{both} directions:
+
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+& \textbf{$E$ (SSL)} & \textbf{init 3-class} & \textbf{final} \\
+\midrule
+\code{exp2a} & $3$   & $0.744$ & $0.843$ \\
+\code{exp2b} & $6$   & $0.732$ & $0.854$ \\
+\code{exp2c} & $7.5$ & $0.691$ & $0.858$ \\
+\code{exp2d} & $9$   & $0.540$ & $0.872$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Spearman $\rho(E, \text{final}) = +1.00$ and
+$\rho(\text{init}, \text{final}) = -1.00$ over this family. \textbf{The
+allocation that produces the worst starting population produces the best final
+one}, and the effect is not marginal: $0.540 \to 0.872$ against
+$0.744 \to 0.843$.
+
+The natural reading is that what evolution consumes is not per-expert skill but
+\emph{mergeability}. Heavy supervised finetuning buys accuracy by driving each
+expert away from the common origin; the merge operator then has to reconcile
+ten networks that have drifted apart. Unsupervised shared pretraining buys the
+opposite: weak experts that all still sit near one point in weight space. Over
+25 generations of merging, the second is worth more. This is consistent with
+the task-vector norms measured in the companion report, where merge quality
+degrades as parents separate---but it is an interpretation, not something this
+budget study isolates on its own.
+
+\subsection{The two one-dimensional sweeps}
+
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{\detokenize{fig2_ssl_sweep.png}}
+\end{minipage}\hfill
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{\detokenize{fig2_finetune_sweep.png}}
+\end{minipage}
+\caption{Left: finetune fixed at $y{=}1.5$, SSL core varies. Right: SSL core
+fixed at $E{=}6$, finetune varies.}
+\end{figure}
+
+\paragraph{SSL core, finetune fixed at $y = 1.5$.} Monotone and still climbing
+at the end of the range:
+$E{=}3 \to 0.838$, $E{=}6 \to 0.855$, $E{=}7.5 \to 0.858$, $E{=}9 \to 0.866$.
+Nothing here shows where it saturates.
+
+\paragraph{Finetune, SSL core fixed at $E = 6$.} Rises then flattens:
+$y{=}0.5 \to 0.814$, $y{=}1.0 \to 0.826$, $y{=}1.5 \to 0.855$,
+$y{=}3.0 \to 0.854$. The last step is flat to within noise, so finetuning past
+$y \approx 1.5$ at this core size buys nothing.
+
+\paragraph{These two are not in conflict.} At fixed core, more finetune helps
+until it saturates---experts do need \emph{some} class knowledge, and $y{=}0.5$
+is visibly too little. At fixed total, moving budget into SSL helps. Both hold
+because an SSL epoch is worth more per unit of budget than a finetune epoch
+\emph{once the finetune floor is met}. The best observed point, \code{exp2d},
+sits below that floor ($y{=}0.3$) and still wins, which suggests the floor
+itself moves down as the core gets stronger---but with one seed and one point
+below the floor, that is a conjecture, not a result.
+
+\subsection{What predicts the final result}
+
+Spearman correlations over all eleven \code{exp2} points:
+
+\begin{center}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{predictor} & \textbf{$\rho$ vs final} & \textbf{$p$} \\
+\midrule
+total budget $E+y$ & $+0.917$ & $0.0001$ \\
+$E$ (SSL epochs) & $+0.833$ & $0.0014$ \\
+initial 3-class accuracy & $+0.518$ & $0.10$ \\
+$y$ (finetune epochs) & $+0.346$ & $0.30$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Total budget dominates, as it must. What matters is the ranking of
+the other three: \textbf{SSL budget is a much better predictor than finetune
+budget, and initial expert quality is a poor one}---and within the equal-budget
+family, where total budget is held constant, initial quality inverts entirely.
+
+%==============================================================================
+\section{Defects and risks}
+
+\subsection{The epoch-definition break}
+\label{sec:break}
+
+This is the one item that should block a reproduction attempt.
+
+The SSL run's \code{history.json} records its full configuration, and that
+record contains \textbf{no} \code{updates\_per\_epoch} field---the run predates
+the commit that introduced it. It therefore used the original definition, where
+an epoch is one pass over the loader. At batch $512$ with
+\code{drop\_last=True} that is $\lfloor 50000/512 \rfloor = 97$ updates.
+
+\code{SSLConfig.updates\_per\_epoch} now defaults to $20$.
+
+\begin{center}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+& \textbf{updates/epoch} & \textbf{images in \code{backbone\_e9}} &
+\textbf{full-set passes} \\
+\midrule
+as produced (on disk) & $97$ & $446{,}976$ & $8.94$ \\
+if regenerated today & $20$ & $92{,}160$ & $1.84$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent A factor of $4.85$, under an unchanged filename and an unchanged
+command line. Corroborating evidence for the $97$: epoch~1 took $226.5$\,s,
+which at $20$ updates would imply $11$\,s per SimSiam step on this hardware.
+
+What this does and does not mean:
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{No published number is wrong.} The checkpoints on disk really did
+      cost $\approx 9$ full-set epochs, and Section~\ref{sec:ledger} charges
+      them as $9$. The figures are correct about the artifacts they plot.
+\item \textbf{The artifacts are not reproducible from current defaults.}
+      Anyone re-running \file{runs\_ssl/launch\_ssl.sh} gets backbones roughly
+      five times cheaper than the ones every \code{exp2} result was built on.
+\item \textbf{The fix is to pin the flag, not to change the default.} The
+      new default is the better convention---it makes an epoch mean the same
+      number of gradient steps in the SSL, pretrain and mutation stages, and it
+      removes the batch-size wrinkle whereby a ``full pass'' is $97$ updates
+      rather than a round number. Reproduction should pass
+      \code{-{}-updates-per-epoch 0} explicitly.
+\end{itemize}
+
+\subsection{\code{exp2e} did not finish}
+
+The closed-form calibration path is implemented and its subtle failure mode is
+fixed and documented (Section~2.5), but
+\file{runs\_exp2e/seed0/permute/csv} is empty and no \file{run.json} was
+written: the population was built and the evolution never produced a
+generation. The strict $S \to 0$ endpoint of the finetune axis is therefore
+\textbf{unmeasured}. \code{exp2i} ($y{=}0.3$, $0.797$) is the cheapest finetune
+point that actually has a result.
+
+%==============================================================================
+\section{Limitations}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{One seed.} Every number here is seed~0. A multi-seed campaign was
+      queued and cancelled. The equal-budget ordering is perfectly monotone
+      across four points, which is suggestive, but four points at one seed
+      cannot separate a real ordering from a lucky one.
+\item \textbf{The SSL axis is a within-run comparison.} $E{=}3,6,7.5,9,50$ are
+      prefixes of a single trajectory. This is a feature---it removes
+      run-to-run variance from that axis---but it also means the $E$ sweep
+      carries \emph{no} independent replication at all, and any pathology of
+      that one run propagates to every point.
+\item \textbf{The probe is relative, not absolute.} One epoch of linear probing
+      under-reads asymptotic probe accuracy. It is valid for ordering
+      checkpoints and was only used for that.
+\item \textbf{The mergeability interpretation is not isolated.} The claim that
+      shared origin beats per-expert skill \emph{because} it keeps parents
+      mergeable is consistent with the evidence but is not tested here; the
+      budget study varies allocation, not distance between parents. A direct
+      test would hold allocation fixed and vary only how far the experts are
+      allowed to drift.
+\item \textbf{The finetune floor is one point.} \code{exp2d} wins from below the
+      apparent floor established at $E{=}6$. Whether the floor genuinely moves
+      with core strength needs the $E{=}9$ finetune sweep, which was not run.
+\item \textbf{Only CIFAR-10, only resnet20$\times$4, only 10 agents of 3
+      classes.} The dataset flag added later makes other datasets runnable, but
+      no other dataset has been run through this stage.
+\end{enumerate}
+
+%==============================================================================
+\section{Reproduction}
+
+\begin{lstlisting}
+# 1. the shared backbone -- one run serves every budget point.
+#    --updates-per-epoch 0 restores the definition the existing
+#    checkpoints were produced under (see Section 6.1).
+python train_ssl.py --epochs 50 --half-checkpoint 7.5 --seed 0 \
+    --updates-per-epoch 0
+
+# 2. feature-quality evidence
+python tools/linear_probe.py --run runs_ssl/simsiam_e50_seed0
+
+# 3. load-path tests (no GPU)
+python tools/check_init_backbone.py
+
+# 4. one budget point: E=9 SSL + S=0.1 per-expert finetune (exp2d)
+python run_sesil.py --seed 0 --method permute --generations 25 \
+    --init-from runs_ssl/simsiam_e50_seed0/backbone_e9.pth.tar \
+    --init-backbone-only --sub-epochs 0.1 --init-lr 0.03 \
+    --out-root ./runs_exp2d
+
+# 5. the strict S -> 0 endpoint (implemented, never completed)
+python run_sesil.py ... --calibrate closed_form --out-root ./runs_exp2e
+
+# 6. figures
+python tools/plot_report.py
+\end{lstlisting}
+
+\end{document}

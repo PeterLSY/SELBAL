@@ -1,0 +1,7 @@
+[exp2rest 2026-07-25 03:16:33] starting exp2a (E=3 backbone, S=2 finetune)
+[exp2rest 2026-07-25 15:53:59] exp2a exited rc=0
+[exp2rest 2026-07-25 15:53:59] starting exp2c (E=7.5 backbone, S=0.5 finetune)
+[exp2rest 2026-07-26 04:22:05] exp2c exited rc=0
+[exp2rest 2026-07-26 04:22:05] starting exp2ref (E=50 backbone, S=1 finetune)
+[exp2rest 2026-07-26 16:56:12] exp2ref exited rc=0
+[exp2rest 2026-07-26 16:56:12] all exp2 budget points finished
